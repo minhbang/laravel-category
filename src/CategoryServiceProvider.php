@@ -36,6 +36,9 @@ class CategoryServiceProvider extends ServiceProvider
         $router->pattern('category', '[0-9]+');
         // model bindings
         $router->model('category', 'Minhbang\LaravelCategory\CategoryItem');
+
+        // load default category type
+        $this->app['category']->switchType();
     }
 
     /**

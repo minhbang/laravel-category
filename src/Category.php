@@ -38,7 +38,6 @@ class Category
     {
         $this->types = $factory->getTypes();
         $this->max_depth = $max_depth;
-        $this->switchType();
     }
 
     /**
@@ -88,7 +87,7 @@ class Category
     protected function getTypeRoot($type = 'main')
     {
         if ($this->hasType($type)) {
-            if ($root = CategoryItem::where('type', $type)->where('slug', $type)->first()) {
+            if ($root = CategoryItem::where('title', $type)->where('slug', $type)->first()) {
                 return $root;
             }
             return CategoryItem::create(

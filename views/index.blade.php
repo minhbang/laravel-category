@@ -29,7 +29,7 @@
                     <ul class="nav nav-tabs tabs-right">
                     @foreach($types as $type => $title)
                         <li{!! $current ==$type ? ' class="active"':'' !!}>
-                            <a href="{{route('backend.category.type', ['type' =>$category])}}">{{$title}}</a>
+                            <a href="{{route('backend.category.type', ['type' =>$type])}}">{{$title}}</a>
                         </li>
                     @endforeach
                     </ul>
