@@ -5,7 +5,7 @@
         <div class="loading hidden"></div>
         <a href="{{route('backend.category.create')}}"
            class="modal-link btn btn-success btn-xs"
-           data-title="{{trans('common.create_object', array('name' => trans('category::common.item')))}}"
+           data-title="{{trans('common.create_object', ['name' => trans('category::common.item')])}}"
            data-label="{{trans('common.save')}}"
            data-icon="align-justify">
             <span class="glyphicon glyphicon-plus-sign"></span> {{trans('category::common.create_item')}}
@@ -18,14 +18,14 @@
         </a>
     </div>
     <div class="panel-body">
-        <div class="row">
-            <div class="col-xs-9">
-                <div class="panel-body-content left">
-                    <div id="nestable-container" class="dd">{!! $nestable !!}</div>
+        <div class="row row-height">
+            <div class="row-height-inside">
+                <div class="col-xs-9 col-height">
+                    <div class="panel-body-content left">
+                        <div id="nestable-container" class="dd">{!! $nestable !!}</div>
+                    </div>
                 </div>
-            </div>
-            <div class="col-xs-3">
-                <div class="panel-body-sidebar right">
+                <div class="col-xs-3 col-height panel-body-sidebar right">
                     <ul class="nav nav-tabs tabs-right">
                     @foreach($types as $type => $title)
                         <li{!! $current ==$type ? ' class="active"':'' !!}>
