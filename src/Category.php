@@ -11,12 +11,20 @@ use Minhbang\LaravelKit\Traits\Presenter\NestablePresenter;
 class Category
 {
     use NestablePresenter;
+
     /**
      * Category types list
      *
      * @var array
      */
+
     public $types;
+    /**
+     * Category groups list
+     *
+     * @var array
+     */
+    public $groups;
 
     /**
      * @var integer max category level
@@ -30,6 +38,8 @@ class Category
      */
     public $root;
 
+    protected $scenario = 'all';
+
     /**
      * @param \Minhbang\LaravelCategory\CategoryFactory $factory
      * @param integer $max_depth
@@ -37,6 +47,7 @@ class Category
     function __construct($factory, $max_depth)
     {
         $this->types = $factory->getTypes();
+        $this->groups = $factory->getGroups();
         $this->max_depth = $max_depth;
     }
 
@@ -88,7 +99,7 @@ class Category
     {
         return $this->root->slug;
     }
-    
+
     /**
      * @param string|null $type
      * @return \Minhbang\LaravelCategory\CategoryItem|null
@@ -112,6 +123,16 @@ class Category
     }
 
     /**
+     * @param string $group
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getGroup($group, $default = null)
+    {
+        return isset($this->groups[$group]) ? $this->groups[$group] : $default;
+    }
+
+    /**
      * Thao tác với category $type
      *
      * @param string $type
@@ -124,18 +145,29 @@ class Category
     }
 
     /**
+     * @param string $scenario
+     * @return static
+     */
+    public function manage($scenario)
+    {
+        $this->scenario = $scenario;
+        return $this;
+    }
+
+    /**
      * Chuyển category type hiện tại, 404 khi type chưa được khai báo
      *
      * @param string|null $type
      */
     public function switchType($type = null)
     {
-        $type = $type ?: session('CategoryResource_type', config('category.default_type'));
+        $key = "category_type_for_{$this->scenario}";
+        $type = $type ?: session($key, config('category.default_type'));
         $this->root = $this->getTypeRoot($type);
         if (!$this->root) {
-            session(['CategoryResource_type' => null]);
+            session([$key => null]);
             abort(404, trans('category::common.not_found'));
         }
-        session(['CategoryResource_type' => $type]);
+        session([$key => $type]);
     }
 }
