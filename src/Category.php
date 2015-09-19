@@ -82,6 +82,14 @@ class Category
     }
 
     /**
+     * @return string
+     */
+    public function getTypeSlug()
+    {
+        return $this->root->slug;
+    }
+    
+    /**
      * @param string|null $type
      * @return \Minhbang\LaravelCategory\CategoryItem|null
      */
