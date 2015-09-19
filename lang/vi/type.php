@@ -1,4 +1,4 @@
 <?php
 return [
-    'main' => 'Bài viết',
+    'article' => 'Bài viết',
 ];

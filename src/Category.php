@@ -71,21 +71,23 @@ class Category
     }
 
     /**
-     * @param string $type
+     * @param string|null $type
      * @param mixed $default
      * @return string
      */
-    public function getTypeName($type, $default = null)
+    public function getTypeName($type = null, $default = null)
     {
+        $type = $type ?: $this->root->slug;
         return isset($this->types[$type]) ? $this->types[$type] : $default;
     }
 
     /**
-     * @param string $type
+     * @param string|null $type
      * @return \Minhbang\LaravelCategory\CategoryItem|null
      */
-    protected function getTypeRoot($type = 'main')
+    protected function getTypeRoot($type = null)
     {
+        $type = $type ?: config('category.default_type');
         if ($this->hasType($type)) {
             if ($root = CategoryItem::where('title', $type)->where('slug', $type)->first()) {
                 return $root;
@@ -120,7 +122,7 @@ class Category
      */
     public function switchType($type = null)
     {
-        $type = $type ?: session('CategoryResource_type', 'main');
+        $type = $type ?: session('CategoryResource_type', config('category.default_type'));
         $this->root = $this->getTypeRoot($type);
         if (!$this->root) {
             session(['CategoryResource_type' => null]);

@@ -12,12 +12,8 @@ use Baum\Node;
  * @property integer $lft
  * @property integer $rgt
  * @property integer $depth
- * @property string $name
- * @property string $label
- * @property string $type
- * @property string $params
- * @property string $options
- * @property-read mixed $url
+ * @property string $title
+ * @property string $slug
  * @property-read \Minhbang\LaravelCategory\CategoryItem $parent
  * @property-read \Illuminate\Database\Eloquent\Collection|\Minhbang\LaravelCategory\CategoryItem[] $children
  * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelCategory\CategoryItem whereId($value)
