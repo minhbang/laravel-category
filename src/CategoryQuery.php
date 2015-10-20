@@ -15,7 +15,7 @@ trait CategoryQuery
      */
     public function category()
     {
-        return $this->belongsTo(CategoryItem::class);
+        return $this->belongsTo('Minhbang\LaravelCategory\CategoryItem');
     }
 
     /**
