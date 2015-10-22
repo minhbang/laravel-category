@@ -5,7 +5,6 @@ namespace Minhbang\LaravelCategory;
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
-use Schema;
 
 class CategoryServiceProvider extends ServiceProvider
 {
@@ -37,11 +36,6 @@ class CategoryServiceProvider extends ServiceProvider
         $router->pattern('category', '[0-9]+');
         // model bindings
         $router->model('category', 'Minhbang\LaravelCategory\CategoryItem');
-
-        // load default category type
-        if (Schema::hasTable('categories')) {
-            $this->app['category']->switchType();
-        }
     }
 
     /**
