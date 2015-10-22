@@ -34,4 +34,14 @@ trait CategoryQuery
         return $query->with('category')
             ->whereIn("{$this->table}.category_id", $ids);
     }
+
+    /**
+     * @param \Illuminate\Database\Query\Builder $query
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function scopeWithCategoryTitle($query)
+    {
+        return $query->leftJoin('categories', 'categories.id', '=', "{$this->table}.category_id")
+            ->addSelect('categories.title as category_title');
+    }
 }
