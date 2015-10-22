@@ -36,9 +36,9 @@ class CategoryFactory
     public function getTypes()
     {
         $default = config('category.default_type');
-        return [
+        return $this->types() + [
             $default => trans("category::type.{$default}"),
-        ] + $this->types();
+        ];
     }
 
     /**
