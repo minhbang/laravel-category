@@ -59,7 +59,7 @@ class Category
      */
     public function nestable()
     {
-        return $this->toNestable($this->root->getImmediateDescendants(), $this->max_depth);
+        return $this->toNestable($this->getRoots(), $this->max_depth);
     }
 
     /**
@@ -69,11 +69,12 @@ class Category
      */
     public function selectize()
     {
-        return $this->toSelectize($this->root->getImmediateDescendants());
+        return $this->toSelectize($this->getRoots());
     }
 
     /**
      * @param string $category
+     *
      * @return bool
      */
     public function hasType($category)
@@ -84,6 +85,7 @@ class Category
     /**
      * @param string|null $type
      * @param mixed $default
+     *
      * @return string
      */
     public function getTypeName($type = null, $default = null)
@@ -102,6 +104,7 @@ class Category
 
     /**
      * @param string|null $type
+     *
      * @return \Minhbang\LaravelCategory\CategoryItem|null
      */
     protected function getTypeRoot($type = null)
@@ -125,6 +128,7 @@ class Category
     /**
      * @param string $group
      * @param mixed $default
+     *
      * @return mixed
      */
     public function getGroup($group, $default = null)
@@ -133,9 +137,18 @@ class Category
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Collection|\Minhbang\LaravelCategory\CategoryItem[]
+     */
+    public function getRoots()
+    {
+        return $this->root->getImmediateDescendants();
+    }
+
+    /**
      * Thao tác với category $type
      *
      * @param string $type
+     *
      * @return static
      */
     public function of($type)
@@ -146,6 +159,7 @@ class Category
 
     /**
      * @param string $scenario
+     *
      * @return static
      */
     public function manage($scenario)
