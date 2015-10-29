@@ -14,6 +14,7 @@ use Baum\Node;
  * @property integer $depth
  * @property string $title
  * @property string $slug
+ * @property-read string $url
  * @property-read \Minhbang\LaravelCategory\CategoryItem $parent
  * @property-read \Illuminate\Database\Eloquent\Collection|\Minhbang\LaravelCategory\CategoryItem[] $children
  * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelCategory\CategoryItem whereId($value)
@@ -43,4 +44,11 @@ class CategoryItem extends Node
         $this->presenter = config('category.presenter', 'Minhbang\LaravelCategory\CategoryItemPresenter');
     }
 
+    /**
+     * @return string
+     */
+    public function getUrlAttribute()
+    {
+        return route('category.show', ['slug' => $this->slug]);
+    }
 }
