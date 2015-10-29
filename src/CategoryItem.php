@@ -33,7 +33,14 @@ class CategoryItem extends Node
 {
     use PresentableTrait;
     protected $table = 'categories';
-    protected $presenter = 'Minhbang\LaravelCategory\CategoryItemPresenter';
+    protected $presenter;
     protected $fillable = ['title', 'slug'];
     public $timestamps = false;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->presenter = config('category.presenter', 'Minhbang\LaravelCategory\CategoryItemPresenter');
+    }
+
 }
