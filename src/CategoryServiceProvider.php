@@ -55,7 +55,7 @@ class CategoryServiceProvider extends ServiceProvider
                 );
             }
         );
-        // add Setting alias
+        // add Category alias
         $this->app->booting(
             function ($app) {
                 AliasLoader::getInstance()->alias('Category', CategoryFacade::class);

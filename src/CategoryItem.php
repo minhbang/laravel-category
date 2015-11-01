@@ -25,6 +25,7 @@ use Baum\Node;
  * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelCategory\CategoryItem whereLabel($value)
  * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelCategory\CategoryItem whereType($value)
  * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelCategory\CategoryItem whereParams($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelCategory\CategoryItem slug($slug)
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutNode($node)
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutSelf()
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutRoot()
@@ -50,5 +51,24 @@ class CategoryItem extends Node
     public function getUrlAttribute()
     {
         return route('category.show', ['slug' => $this->slug]);
+    }
+
+    /**
+     * @param \Illuminate\Database\Query\Builder|static $query
+     * @param string $slug
+     * @return \Illuminate\Database\Query\Builder|static
+     */
+    public function scopeSlug($query, $slug)
+    {
+        return $query->where('slug', $slug);
+    }
+
+    /**
+     * @param string $slug
+     * @return static|null
+     */
+    public static function findBySlug($slug)
+    {
+        return static::slug($slug)->first();
     }
 }

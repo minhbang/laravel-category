@@ -145,6 +145,15 @@ class Category
     }
 
     /**
+     * @param string $attribute
+     * @param string $key
+     */
+    public function getListRoots($attribute = 'title', $key = 'id')
+    {
+        return $this->root->immediateDescendants()->lists($attribute, $key)->all();
+    }
+
+    /**
      * Thao tác với category $type
      *
      * @param string $type
