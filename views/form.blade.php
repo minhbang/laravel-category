@@ -7,7 +7,7 @@
             <p class="form-control-static text-primary">{{ $parent_title }}</p>
         </div>
     </div>
-    <div class="form-group{{ $errors->has('label') ? ' has-error':'' }}">
+    <div class="form-group{{ $errors->has('title') ? ' has-error':'' }}">
         {!! Form::label('label', trans('category::common.title'), ['class' => 'col-xs-3 control-label']) !!}
         <div class="col-xs-9">
             {!! Form::text('title', null, ['class' => 'has-slug form-control','data-slug_target' => "#slug"]) !!}
