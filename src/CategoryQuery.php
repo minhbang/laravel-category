@@ -30,7 +30,7 @@ trait CategoryQuery
         if (is_null($category)) {
             return $query->with('category');
         }
-        $ids = $category->getDescendantsAndSelf()->lists('id')->all();
+        $ids = $category->descendantsAndSelf()->lists('id')->all();
         return $query->with('category')
             ->whereIn("{$this->table}.category_id", $ids);
     }
