@@ -1,6 +1,8 @@
 <?php
 namespace Minhbang\Category;
 
+use Session;
+
 /**
  * Class Category
  *
@@ -39,13 +41,17 @@ class Category
     /**
      * Lấy manager của category $type
      *
+     * @param string|null $key
      * @param string|null $type
      */
-    public function manage($type = null)
+    public function manage($type = null, $key = null)
     {
         $type = $type ?: config('category.default_type');
         if (!isset($this->types[$type])) {
-            abort(500, trans('category::type.invalid'));
+            if ($key) {
+                Session::forget($key);
+            }
+            abort(404, trans('category::type.invalid') . 'Ca');
         }
         if (!isset($this->managers[$type])) {
             $this->managers[$type] = new Manager($type, $this->max_depth);
