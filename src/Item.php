@@ -1,11 +1,11 @@
 <?php
-namespace Minhbang\LaravelCategory;
+namespace Minhbang\Category;
 
 use Laracasts\Presenter\PresentableTrait;
 use Baum\Node;
 
 /**
- * App\CategoryItem
+ * App\Item
  *
  * @property integer $id
  * @property integer $parent_id
@@ -15,23 +15,23 @@ use Baum\Node;
  * @property string $title
  * @property string $slug
  * @property-read string $url
- * @property-read \Minhbang\LaravelCategory\CategoryItem $parent
- * @property-read \Illuminate\Database\Eloquent\Collection|\Minhbang\LaravelCategory\CategoryItem[] $children
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelCategory\CategoryItem whereId($value)
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelCategory\CategoryItem whereParentId($value)
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelCategory\CategoryItem whereLft($value)
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelCategory\CategoryItem whereRgt($value)
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelCategory\CategoryItem whereDepth($value)
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelCategory\CategoryItem whereLabel($value)
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelCategory\CategoryItem whereType($value)
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelCategory\CategoryItem whereParams($value)
- * @method static \Illuminate\Database\Query\Builder|\Minhbang\LaravelCategory\CategoryItem slug($slug)
+ * @property-read \Minhbang\Category\Item $parent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Minhbang\Category\Item[] $children
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Item whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Item whereParentId($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Item whereLft($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Item whereRgt($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Item whereDepth($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Item whereLabel($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Item whereType($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Item whereParams($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Item slug($slug)
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutNode($node)
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutSelf()
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutRoot()
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node limitDepth($limit)
  */
-class CategoryItem extends Node
+class Item extends Node
 {
     use PresentableTrait;
     protected $table = 'categories';
@@ -42,7 +42,7 @@ class CategoryItem extends Node
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->presenter = config('category.presenter', 'Minhbang\LaravelCategory\CategoryItemPresenter');
+        $this->presenter = config('category.presenter', 'Minhbang\Category\ItemPresenter');
     }
 
     /**

@@ -1,196 +1,70 @@
 <?php
-namespace Minhbang\LaravelCategory;
-
-use Minhbang\LaravelKit\Traits\Presenter\NestablePresenter;
+namespace Minhbang\Category;
 
 /**
  * Class Category
  *
- * @package Minhbang\LaravelCategory
+ * @package Minhbang\Category
  */
 class Category
 {
-    use NestablePresenter;
-
     /**
-     * Category types list
-     *
+     * @var \Minhbang\Category\Category
+     */
+    protected $managers = [];
+    /**
+     * @var int
+     */
+    protected $max_depth;
+    /**
      * @var array
      */
+    protected $types = [];
 
-    public $types;
     /**
-     * Category groups list
+     * UserManager constructor.
      *
-     * @var array
+     * @param array $types
+     * @param int $max_depth
      */
-    public $groups;
-
-    /**
-     * @var integer max category level
-     */
-    public $max_depth;
-
-    /**
-     * Current type root
-     *
-     * @var \Minhbang\LaravelCategory\CategoryItem
-     */
-    public $root;
-
-    protected $scenario = 'all';
-
-    /**
-     * @param \Minhbang\LaravelCategory\CategoryFactory $factory
-     * @param integer $max_depth
-     */
-    function __construct($factory, $max_depth)
+    public function __construct($types = ['article'], $max_depth = 5)
     {
-        $this->types = $factory->getTypes();
-        $this->groups = $factory->getGroups();
+        foreach ($types as $type) {
+            $this->types[$type] = trans("category::type.{$type}");
+        }
         $this->max_depth = $max_depth;
     }
 
-    /**
-     * Render html theo định dạng của jquery nestable plugin
-     *
-     * @see https://github.com/dbushell/Nestable
-     * @return string
-     */
-    public function nestable()
-    {
-        return $this->toNestable($this->getRoots(), $this->max_depth);
-    }
 
     /**
-     * Tạo data select tag theo định dạng selectize
+     * Lấy manager của category $type
      *
-     * @return string
-     */
-    public function selectize()
-    {
-        return $this->toSelectize($this->getRoots());
-    }
-
-    /**
-     * @param string $category
-     *
-     * @return bool
-     */
-    public function hasType($category)
-    {
-        return isset($this->types[$category]);
-    }
-
-    /**
      * @param string|null $type
-     * @param mixed $default
-     *
-     * @return string
      */
-    public function getTypeName($type = null, $default = null)
-    {
-        $type = $type ?: $this->root->slug;
-        return isset($this->types[$type]) ? $this->types[$type] : $default;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTypeSlug()
-    {
-        return $this->root->slug;
-    }
-
-    /**
-     * @param string|null $type
-     *
-     * @return \Minhbang\LaravelCategory\CategoryItem|null
-     */
-    protected function getTypeRoot($type = null)
+    public function manage($type = null)
     {
         $type = $type ?: config('category.default_type');
-        if ($this->hasType($type)) {
-            if ($root = CategoryItem::where('title', $type)->where('slug', $type)->first()) {
-                return $root;
-            }
-            return CategoryItem::create(
-                [
-                    'title' => $type,
-                    'slug'  => $type,
-                ]
-            );
-        } else {
-            return null;
+        if (!isset($this->types[$type])) {
+            abort(500, trans('category::type.invalid'));
         }
+        if (!isset($this->managers[$type])) {
+            $this->managers[$type] = new Manager($type, $this->max_depth);
+        }
+        return $this->managers[$type];
     }
 
     /**
-     * @param string $group
+     * @param string $type
      * @param mixed $default
      *
-     * @return mixed
+     * @return array
      */
-    public function getGroup($group, $default = null)
+    public function typeNames($type = null, $default = false)
     {
-        return isset($this->groups[$group]) ? $this->groups[$group] : $default;
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Collection|\Minhbang\LaravelCategory\CategoryItem[]
-     */
-    public function getRoots()
-    {
-        return $this->root->getImmediateDescendants();
-    }
-
-    /**
-     * @param string $attribute
-     * @param string $key
-     */
-    public function getListRoots($attribute = 'title', $key = 'id')
-    {
-        return $this->root->immediateDescendants()->lists($attribute, $key)->all();
-    }
-
-    /**
-     * Thao tác với category $type
-     *
-     * @param string $type
-     *
-     * @return static
-     */
-    public function of($type)
-    {
-        $this->switchType($type);
-        return $this;
-    }
-
-    /**
-     * @param string $scenario
-     *
-     * @return static
-     */
-    public function manage($scenario)
-    {
-        $this->scenario = $scenario;
-        return $this;
-    }
-
-    /**
-     * Chuyển category type hiện tại, 404 khi type chưa được khai báo
-     *
-     * @param string|null $type
-     */
-    public function switchType($type = null)
-    {
-        $key = "category_type_for_{$this->scenario}";
-        $type = $type ?: session($key, config('category.default_type'));
-        $this->root = $this->getTypeRoot($type);
-        if (!$this->root) {
-            session([$key => null]);
-            abort(404, trans('category::common.not_found'));
+        if ($type) {
+            return isset($this->types[$type]) ? $this->types[$type] : $default;
+        } else {
+            return $this->types;
         }
-        session([$key => $type]);
     }
 }

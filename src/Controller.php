@@ -1,37 +1,53 @@
 <?php
-namespace Minhbang\LaravelCategory;
+namespace Minhbang\Category;
 
 use Minhbang\LaravelKit\Extensions\BackendController;
 use Request;
 
-class CategoryController extends BackendController
+class Controller extends BackendController
 {
     /**
      * Quản lý category
      *
-     * @var \Minhbang\LaravelCategory\Category
+     * @var \Minhbang\Category\Manager
      */
     protected $manager;
+
+    /**
+     * @var string Category type hiện tại
+     */
+    protected $type;
 
     public function __construct()
     {
         parent::__construct(config('category.middlewares'));
-        $this->manager = app('category');
+        $this->switchType();
+    }
+
+    /**
+     * @param null|string $type
+     */
+    protected function switchType($type = null)
+    {
+        $key = 'backend.category.type';
+        $type = $type ?: session($key, config('category.default_type'));
+        session([$key => $type]);
+        $this->manager = app('category')->manage($type);
+        $this->type = $type;
     }
 
     /**
      * @param string|null $type
+     *
      * @return \Illuminate\View\View
      */
     public function index($type = null)
     {
-        if ($type) {
-            $this->manager->switchType($type);
-        }
+        $this->switchType($type);
         $max_depth = $this->manager->max_depth;
         $nestable = $this->manager->nestable();
-        $types = $this->manager->types;
-        $current = $this->manager->root->slug;
+        $types = $this->manager->typeNames();
+        $current = $this->type;
         $this->buildHeading(
             [trans('category::common.manage'), "[{$types[$current]}]"],
             'fa-sitemap',
@@ -53,16 +69,18 @@ class CategoryController extends BackendController
     /**
      * Show the form for creating a new resource.
      *
-     * @param \Minhbang\LaravelCategory\CategoryItem $category
+     * @param \Minhbang\Category\Item $category
+     *
      * @return \Illuminate\View\View
      */
-    public function createChildOf(CategoryItem $category)
+    public function createChildOf(Item $category)
     {
         return $this->_create($category);
     }
 
     /**
-     * @param null|\Minhbang\LaravelCategory\CategoryItem $parent
+     * @param null|\Minhbang\Category\Item $parent
+     *
      * @return \Illuminate\View\View
      */
     protected function _create($parent = null)
@@ -74,7 +92,7 @@ class CategoryController extends BackendController
             $parent_title = '- ROOT -';
             $url = route('backend.category.store');
         }
-        $category = new CategoryItem();
+        $category = new Item();
         $method = 'post';
         return view(
             'category::form',
@@ -86,10 +104,11 @@ class CategoryController extends BackendController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Minhbang\LaravelCategory\CategoryItemRequest $request
+     * @param \Minhbang\Category\ItemRequest $request
+     *
      * @return \Illuminate\View\View
      */
-    public function store(CategoryItemRequest $request)
+    public function store(ItemRequest $request)
     {
         return $this->_store($request);
     }
@@ -97,11 +116,12 @@ class CategoryController extends BackendController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Minhbang\LaravelCategory\CategoryItemRequest $request
-     * @param \Minhbang\LaravelCategory\CategoryItem $category
+     * @param \Minhbang\Category\ItemRequest $request
+     * @param \Minhbang\Category\Item $category
+     *
      * @return \Illuminate\View\View
      */
-    public function storeChildOf(CategoryItemRequest $request, CategoryItem $category)
+    public function storeChildOf(ItemRequest $request, Item $category)
     {
         return $this->_store($request, $category);
     }
@@ -109,26 +129,23 @@ class CategoryController extends BackendController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Minhbang\LaravelCategory\CategoryItemRequest $request
-     * @param null|\Minhbang\LaravelCategory\CategoryItem $parent
+     * @param \Minhbang\Category\ItemRequest $request
+     * @param null|\Minhbang\Category\Item $parent
+     *
      * @return \Illuminate\View\View
      */
     public function _store($request, $parent = null)
     {
-        $category = new CategoryItem();
+        $category = new Item();
         $category->fill($request->all());
         $category->save();
-        if ($parent) {
-            $category->makeChildOf($parent);
-        } else {
-            $category->makeChildOf($this->manager->root);
-        }
+        $category->makeChildOf($parent ?: $this->manager->typeRoot());
         return view(
             '_modal_script',
             [
                 'message'    => [
                     'type'    => 'success',
-                    'content' => trans('common.create_object_success', ['name' => trans('category::common.item')])
+                    'content' => trans('common.create_object_success', ['name' => trans('category::common.item')]),
                 ],
                 'reloadPage' => true,
             ]
@@ -138,10 +155,11 @@ class CategoryController extends BackendController
     /**
      * Display the specified resource.
      *
-     * @param \Minhbang\LaravelCategory\CategoryItem $category
+     * @param \Minhbang\Category\Item $category
+     *
      * @return \Illuminate\View\View
      */
-    public function show(CategoryItem $category)
+    public function show(Item $category)
     {
         return view('category::show', compact('category'));
     }
@@ -149,12 +167,14 @@ class CategoryController extends BackendController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \Minhbang\LaravelCategory\CategoryItem $category
+     * @param \Minhbang\Category\Item $category
+     *
      * @return \Illuminate\View\View
      */
-    public function edit(CategoryItem $category)
+    public function edit(Item $category)
     {
-        $parent_title = $category->isRoot() ? '- ROOT -' : $category->parent->title;
+        $parent = $category->parent;
+        $parent_title = $parent->isRoot() ? '- ROOT -' : $parent->title;
         $url = route('backend.category.update', ['category' => $category->id]);
         $method = 'put';
         return view('category::form', compact('parent_title', 'url', 'method', 'category'));
@@ -163,11 +183,12 @@ class CategoryController extends BackendController
     /**
      * Update the specified resource in storage.
      *
-     * @param \Minhbang\LaravelCategory\CategoryItemRequest $request
-     * @param \Minhbang\LaravelCategory\CategoryItem $category
+     * @param \Minhbang\Category\ItemRequest $request
+     * @param \Minhbang\Category\Item $category
+     *
      * @return \Illuminate\View\View
      */
-    public function update(CategoryItemRequest $request, CategoryItem $category)
+    public function update(ItemRequest $request, Item $category)
     {
         $category->fill($request->all());
         $category->save();
@@ -176,7 +197,7 @@ class CategoryController extends BackendController
             [
                 'message'    => [
                     'type'    => 'success',
-                    'content' => trans('common.update_object_success', ['name' => trans('category::common.item')])
+                    'content' => trans('common.update_object_success', ['name' => trans('category::common.item')]),
                 ],
                 'reloadPage' => true,
             ]
@@ -186,11 +207,12 @@ class CategoryController extends BackendController
     /**
      * Remove the specified resource from storage.
      *
-     * @param \Minhbang\LaravelCategory\CategoryItem $category
+     * @param \Minhbang\Category\Item $category
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
-    public function destroy(CategoryItem $category)
+    public function destroy(Item $category)
     {
         $category->delete();
         return response()->json(
@@ -242,13 +264,14 @@ class CategoryController extends BackendController
 
     /**
      * @param string $name
-     * @return null|\Minhbang\LaravelCategory\CategoryItem
+     *
+     * @return null|\Minhbang\Category\Item
      */
     protected function getNode($name)
     {
         $id = Request::input($name);
         if ($id) {
-            if ($node = CategoryItem::find($id)) {
+            if ($node = Item::find($id)) {
                 return $node;
             } else {
                 return $this->dieAjax();
@@ -268,7 +291,7 @@ class CategoryController extends BackendController
         return die(json_encode(
             [
                 'type'    => 'error',
-                'content' => trans('category::common.not_found')
+                'content' => trans('category::common.not_found'),
             ]
         ));
     }

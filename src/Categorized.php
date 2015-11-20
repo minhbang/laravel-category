@@ -1,28 +1,28 @@
 <?php
-namespace Minhbang\LaravelCategory;
+namespace Minhbang\Category;
 
 /**
- * Class CategoryQuery
+ * Class Categorized
  *
- * @package Minhbang\LaravelCategory
+ * @package Minhbang\Category
  * @property-read string $table
  * @method \Illuminate\Database\Eloquent\Relations\BelongsTo belongsTo($related, $foreignKey = null, $otherKey = null, $relation = null)
  */
-trait CategoryQuery
+trait Categorized
 {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function category()
     {
-        return $this->belongsTo('Minhbang\LaravelCategory\CategoryItem');
+        return $this->belongsTo('Minhbang\Category\Item');
     }
 
     /**
      * Tất cả content thuộc $category và con cháu của $category
      *
      * @param \Illuminate\Database\Query\Builder $query
-     * @param \Minhbang\LaravelCategory\CategoryItem $category
+     * @param \Minhbang\Category\Item $category
      * @return \Illuminate\Database\Query\Builder
      */
     public function scopeCategorized($query, $category = null)

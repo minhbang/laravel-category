@@ -20,13 +20,25 @@ $ composer update
 
 * **Thêm vào file config/app.php => 'providers'**
 ```php
-	Minhbang\LaravelCategory\CategoryServiceProvider::class,
+	Minhbang\Category\ServiceProvider::class,
 ```
 
 * **Publish config và database migrations**
 ```bash
 $ php artisan vendor:publish
 $ php artisan migrate
+```
+
+## Thêm loại Category mới
+
+* **config:** category.php
+```php
+'types' => ['article', 'new_type'],
+```
+
+* **lang:** type.php
+```php
+'new_type' => 'Loại mới'
 ```
 
 ## License

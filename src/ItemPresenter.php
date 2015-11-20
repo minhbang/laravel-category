@@ -1,14 +1,14 @@
 <?php
-namespace Minhbang\LaravelCategory;
+namespace Minhbang\Category;
 
 use Laracasts\Presenter\Presenter;
 
 /**
- * Class CategoryPresenter
+ * Class ItemPresenter
  *
- * @package Minhbang\LaravelCategory
+ * @package Minhbang\Category
  */
-class CategoryItemPresenter extends Presenter
+class ItemPresenter extends Presenter
 {
     /**
      * @return string

@@ -1,9 +1,9 @@
 <?php
-namespace Minhbang\LaravelCategory;
+namespace Minhbang\Category;
 
-use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\Facades\Facade as BaseFacade;
 
-class CategoryFacade extends Facade
+class Facade extends BaseFacade
 {
     /**
      * Get the registered name of the component.

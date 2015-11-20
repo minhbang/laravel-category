@@ -1,8 +1,8 @@
 <?php
 return [
+    'types'        => ['article', 'product'],
     'default_type' => 'article',
-    'factory'      => Minhbang\LaravelCategory\CategoryFactory::class,
-    'presenter'    => Minhbang\LaravelCategory\CategoryItemRequest::class,
+    'presenter'    => Minhbang\Category\ItemPresenter::class,
     'add_route'    => true,
     'max_depth'    => 5,
     'middlewares'  => 'admin',

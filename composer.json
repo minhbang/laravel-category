@@ -26,12 +26,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Minhbang\\LaravelCategory\\": "src/"
+            "Minhbang\\Category\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Minhbang\\LaravelCategory\\Test\\": "tests/"
+            "Minhbang\\Category\\Test\\": "tests/"
         }
     }
 }

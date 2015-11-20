@@ -1,14 +1,14 @@
 <?php
-namespace Minhbang\LaravelCategory;
+namespace Minhbang\Category;
 
 use Minhbang\LaravelKit\Extensions\Request;
 
 /**
- * Class CategoryItemRequest
+ * Class ItemRequest
  *
- * @package Minhbang\LaravelCategory
+ * @package Minhbang\Category
  */
-class CategoryItemRequest extends Request
+class ItemRequest extends Request
 {
     public $trans_prefix = 'category::common';
     public $rules = [
