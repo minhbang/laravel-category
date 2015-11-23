@@ -26,6 +26,7 @@ class CreateCategoriesTable extends Migration
                 // Normal columns
                 $table->string('title', 255);
                 $table->string('slug', 255)->unique();
+                $table->integer('moderator_id')->unsigned()->nullable();
             }
         );
     }

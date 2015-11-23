@@ -22,7 +22,14 @@
             <div class="row-height-inside">
                 <div class="col-xs-9 col-height">
                     <div class="panel-body-content left">
-                        <div id="nestable-container" class="dd">{!! $nestable !!}</div>
+                        <div class="dd-category">
+                            <div class="nested-list-head">
+                                <div class="nested-list-actions nested-list-titles pull-right">
+                                    {{trans('category::common.moderator_id')}}<div class="actions">{{trans('common.actions')}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="nestable-container" class="dd dd-category">{!! $nestable !!}</div>
                     </div>
                 </div>
                 <div class="col-xs-3 col-height panel-body-sidebar right">
@@ -57,11 +64,25 @@
             trans: {
                 name: '{{ trans('category::common.item') }}'
             },
-            csrf_token: '{{ csrf_token() }}'
+            csrf_token: '{{ csrf_token() }}',
+            afterDrop: function(){
+                location.reload(true);
+            }
         });
         $.fn.mbHelpers.reloadPage = function () {
             $('.panel-nestable').mbNestable('reload');
-        }
+        };
+        $('.dd a.quick-update').quickUpdate({
+            url: '{{ route('backend.category.quick_update', ['category' => '__ID__']) }}',
+            container: '.panel-nestable',
+            elementTemplate: '{!! Form::select('_value', $user_groups, null, ['class' => '_value form-control']) !!}',
+            afterShow: function(element, form){
+                $('select._value', form).selectize();
+            },
+            processResult: function(){
+                location.reload(true);
+            }
+        });
     });
 </script>
 @stop

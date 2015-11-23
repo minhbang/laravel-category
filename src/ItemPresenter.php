@@ -2,6 +2,7 @@
 namespace Minhbang\Category;
 
 use Laracasts\Presenter\Presenter;
+use Html;
 
 /**
  * Class ItemPresenter
@@ -19,12 +20,42 @@ class ItemPresenter extends Presenter
     }
 
     /**
+     * @param string $name
+     *
+     * @return string
+     */
+    public function moderator($name = 'short_name')
+    {
+        return $this->entity->moderator ? $this->entity->moderator->$name : null;
+    }
+
+    /**
      * @param int $max_depth
+     *
      * @return string
      */
     public function actions($max_depth)
     {
-        if($this->entity->depth < $max_depth) {
+        if ($this->entity->depth == 1) {
+            $moderator = Html::linkQuickUpdate(
+                $this->entity->id,
+                $this->entity->moderator_id,
+                [
+                    'attr'       => 'moderator_id',
+                    'title'      => trans('category::common.moderator'),
+                    'placement'  => 'top',
+                    'class'      => 'w-md',
+                    'label'      => $this->moderator(),
+                    'null_label' => trans('category::common.no_moderator'),
+                    'null_class' => 'text-danger',
+                ],
+                ['icon' => 'fa-users', 'size' => 'xs', 'type' => 'warning']
+            );
+        } else {
+            $moderator = '';
+        }
+
+        if ($this->entity->depth < $max_depth) {
             $child = '<a href="' . url("backend/category/{$this->entity->id}/create") . '"
                class="modal-link btn btn-primary btn-xs"
                data-toggle="tooltip"
@@ -61,6 +92,6 @@ class ItemPresenter extends Presenter
             data-item_title="' . $this->entity->title . '"
             class="delete_item btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span>
         </a>';
-        return $child . $show . $edit . $delete;
+        return $moderator . '<div class="actions">' . $child . $show . $edit . $delete . '</div>';
     }
 }

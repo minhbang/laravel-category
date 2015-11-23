@@ -2,7 +2,7 @@
 namespace Minhbang\Category;
 
 use Laracasts\Presenter\PresentableTrait;
-use Baum\Node;
+use Minhbang\LaravelKit\Extensions\NestedSetModel;
 
 /**
  * App\Item
@@ -14,6 +14,7 @@ use Baum\Node;
  * @property integer $depth
  * @property string $title
  * @property string $slug
+ * @property integer $moderator_id
  * @property-read string $url
  * @property-read \Minhbang\Category\Item $parent
  * @property-read \Illuminate\Database\Eloquent\Collection|\Minhbang\Category\Item[] $children
@@ -31,18 +32,26 @@ use Baum\Node;
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutRoot()
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node limitDepth($limit)
  */
-class Item extends Node
+class Item extends NestedSetModel
 {
     use PresentableTrait;
     protected $table = 'categories';
     protected $presenter;
-    protected $fillable = ['title', 'slug'];
+    protected $fillable = ['title', 'slug', 'moderator_id'];
     public $timestamps = false;
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
         $this->presenter = config('category.presenter', 'Minhbang\Category\ItemPresenter');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function moderator()
+    {
+        return $this->belongsTo('Minhbang\LaravelUser\Group');
     }
 
     /**
@@ -56,6 +65,7 @@ class Item extends Node
     /**
      * @param \Illuminate\Database\Query\Builder|static $query
      * @param string $slug
+     *
      * @return \Illuminate\Database\Query\Builder|static
      */
     public function scopeSlug($query, $slug)
@@ -65,6 +75,7 @@ class Item extends Node
 
     /**
      * @param string $slug
+     *
      * @return static|null
      */
     public static function findBySlug($slug)

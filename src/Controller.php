@@ -2,10 +2,12 @@
 namespace Minhbang\Category;
 
 use Minhbang\LaravelKit\Extensions\BackendController;
+use Minhbang\LaravelKit\Traits\Controller\QuickUpdateActions;
 use Request;
 
 class Controller extends BackendController
 {
+    use QuickUpdateActions;
     /**
      * Quản lý category
      *
@@ -48,12 +50,13 @@ class Controller extends BackendController
         $nestable = $this->manager->nestable();
         $types = $this->manager->typeNames();
         $current = $this->type;
+        $user_groups = app('user-manager')->listGroups();
         $this->buildHeading(
             [trans('category::common.manage'), "[{$types[$current]}]"],
             'fa-sitemap',
             ['#' => trans('category::common.category')]
         );
-        return view('category::index', compact('max_depth', 'nestable', 'types', 'current'));
+        return view('category::index', compact('max_depth', 'nestable', 'types', 'current', 'user_groups'));
     }
 
     /**
@@ -294,5 +297,20 @@ class Controller extends BackendController
                 'content' => trans('category::common.not_found'),
             ]
         ));
+    }
+
+    /**
+     * Các attributes cho phéo quick-update
+     *
+     * @return array
+     */
+    protected function quickUpdateAttributes()
+    {
+        return [
+            'moderator_id' => [
+                'rules' => 'required|integer',
+                'label' => trans('category::common.moderator_id'),
+            ],
+        ];
     }
 }
