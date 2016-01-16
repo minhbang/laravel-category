@@ -51,7 +51,7 @@ class Category
             if ($key) {
                 Session::forget($key);
             }
-            abort(404, trans('category::type.invalid') . 'Ca');
+            abort(404, trans('category::type.invalid'));
         }
         if (!isset($this->managers[$type])) {
             $this->managers[$type] = new Manager($type, $this->max_depth);

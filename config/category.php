@@ -1,6 +1,6 @@
 <?php
 return [
-    'types'        => ['article', 'product'],
+    'types'        => ['article', 'ebook'],
     'default_type' => 'article',
     'presenter'    => Minhbang\Category\ItemPresenter::class,
     'add_route'    => true,

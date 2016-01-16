@@ -40,6 +40,11 @@ class Item extends NestedSetModel
     protected $fillable = ['title', 'slug', 'moderator_id'];
     public $timestamps = false;
 
+    /**
+     * @var bool
+     */
+    public static $use_moderator = true;
+
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);

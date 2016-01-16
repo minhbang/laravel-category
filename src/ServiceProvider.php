@@ -31,7 +31,7 @@ class ServiceProvider extends BaseServiceProvider
                 __DIR__ . '/../config/category.php'             => config_path('category.php'),
                 __DIR__ . '/../database/migrations/' .
                 '2015_09_16_155451_create_categories_table.php' =>
-                    database_path('migrations/' . '2015_09_16_155451_create_categories_table.php'),
+                    database_path('migrations/2015_09_16_155451_create_categories_table.php'),
             ]
         );
 

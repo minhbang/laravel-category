@@ -25,7 +25,7 @@
                         <div class="dd-category">
                             <div class="nested-list-head">
                                 <div class="nested-list-actions nested-list-titles pull-right">
-                                    {{trans('category::common.moderator_id')}}<div class="actions">{{trans('common.actions')}}</div>
+                                    {{ $use_moderator ? trans('category::common.moderator_id'):'' }}<div class="actions">{{trans('common.actions')}}</div>
                                 </div>
                             </div>
                         </div>

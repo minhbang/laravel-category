@@ -44,7 +44,6 @@ class Manager
     /**
      * Render html theo định dạng của jquery nestable plugin
      *
-     * @see https://github.com/dbushell/Nestable
      * @return string
      */
     public function nestable()
@@ -55,11 +54,23 @@ class Manager
     /**
      * Tạo data select tag theo định dạng selectize
      *
-     * @return string
+     * @return array
      */
     public function selectize()
     {
         return $this->toSelectize($this->roots());
+    }
+
+    /**
+     * Tạo tree data cho bootstrap treeview
+     *
+     * @param \Minhbang\Category\Item|mixed|null $selected
+     *
+     * @return array
+     */
+    public function tree($selected = null)
+    {
+        return $this->toTree($this->roots(), $selected);
     }
 
     /**
@@ -70,6 +81,7 @@ class Manager
         if (is_null($this->_roots)) {
             $this->_roots = $this->_type_root->getImmediateDescendants();
         }
+
         return $this->_roots;
     }
 

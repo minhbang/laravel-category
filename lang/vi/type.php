@@ -1,6 +1,6 @@
 <?php
 return [
     'article' => 'Bài viết',
-    'product' => 'Sản phẩm',
+    'ebook'   => 'Tài liệu số',
     'invalid' => 'Invalid Category type!',
 ];

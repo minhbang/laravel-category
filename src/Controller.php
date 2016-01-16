@@ -8,6 +8,9 @@ use Request;
 class Controller extends BackendController
 {
     use QuickUpdateActions;
+
+    protected $moderator = true;
+
     /**
      * Quản lý category
      *
@@ -20,10 +23,30 @@ class Controller extends BackendController
      */
     protected $type;
 
+    /**
+     * @var bool
+     */
+    protected $type_fixed = true;
+
+    /**
+     * @var array
+     */
+    protected $views = [
+        'form'  => 'category::form',
+        'index' => 'category::index',
+        'show'  => 'category::show',
+    ];
+
     public function __construct()
     {
-        parent::__construct(config('category.middlewares'));
-        $this->switchType();
+        parent::__construct();
+
+        if (is_null($this->type)) {
+            $this->switchType();
+            $this->type_fixed = false;
+        } else {
+            $this->manager = app('category')->manage($this->type);
+        }
     }
 
     /**
@@ -45,7 +68,9 @@ class Controller extends BackendController
      */
     public function index($type = null)
     {
-        $this->switchType($type);
+        if (!$this->type_fixed) {
+            $this->switchType($type);
+        }
         $max_depth = $this->manager->max_depth;
         $nestable = $this->manager->nestable();
         $types = $this->manager->typeNames();
@@ -56,7 +81,12 @@ class Controller extends BackendController
             'fa-sitemap',
             ['#' => trans('category::common.category')]
         );
-        return view('category::index', compact('max_depth', 'nestable', 'types', 'current', 'user_groups'));
+        $use_moderator = Item::$use_moderator;
+
+        return view(
+            $this->views['index'],
+            compact('max_depth', 'nestable', 'types', 'current', 'user_groups', 'use_moderator')
+        );
     }
 
     /**
@@ -97,8 +127,9 @@ class Controller extends BackendController
         }
         $category = new Item();
         $method = 'post';
+
         return view(
-            'category::form',
+            $this->views['index'],
             compact('parent_title', 'url', 'method', 'category')
         );
     }
@@ -143,6 +174,7 @@ class Controller extends BackendController
         $category->fill($request->all());
         $category->save();
         $category->makeChildOf($parent ?: $this->manager->typeRoot());
+
         return view(
             '_modal_script',
             [
@@ -164,7 +196,7 @@ class Controller extends BackendController
      */
     public function show(Item $category)
     {
-        return view('category::show', compact('category'));
+        return view($this->views['show'], compact('category'));
     }
 
     /**
@@ -180,7 +212,8 @@ class Controller extends BackendController
         $parent_title = $parent->isRoot() ? '- ROOT -' : $parent->title;
         $url = route('backend.category.update', ['category' => $category->id]);
         $method = 'put';
-        return view('category::form', compact('parent_title', 'url', 'method', 'category'));
+
+        return view($this->views['form'], compact('parent_title', 'url', 'method', 'category'));
     }
 
     /**
@@ -195,6 +228,7 @@ class Controller extends BackendController
     {
         $category->fill($request->all());
         $category->save();
+
         return view(
             '_modal_script',
             [
@@ -218,6 +252,7 @@ class Controller extends BackendController
     public function destroy(Item $category)
     {
         $category->delete();
+
         return response()->json(
             [
                 'type'    => 'success',
@@ -254,6 +289,7 @@ class Controller extends BackendController
                     }
                 }
             }
+
             return response()->json(
                 [
                     'type'    => 'success',

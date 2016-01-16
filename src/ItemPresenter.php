@@ -36,7 +36,7 @@ class ItemPresenter extends Presenter
      */
     public function actions($max_depth)
     {
-        if ($this->entity->depth == 1) {
+        if (Item::$use_moderator && $this->entity->depth == 1) {
             $moderator = Html::linkQuickUpdate(
                 $this->entity->id,
                 $this->entity->moderator_id,
