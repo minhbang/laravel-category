@@ -43,6 +43,8 @@ class Category
      *
      * @param string|null $key
      * @param string|null $type
+     *
+     * @return \Minhbang\Category\Manager
      */
     public function manage($type = null, $key = null)
     {
@@ -56,6 +58,7 @@ class Category
         if (!isset($this->managers[$type])) {
             $this->managers[$type] = new Manager($type, $this->max_depth);
         }
+
         return $this->managers[$type];
     }
 

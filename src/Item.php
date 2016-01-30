@@ -2,7 +2,7 @@
 namespace Minhbang\Category;
 
 use Laracasts\Presenter\PresentableTrait;
-use Minhbang\LaravelKit\Extensions\NestedSetModel;
+use Minhbang\Kit\Extensions\NestedSetModel;
 
 /**
  * App\Item
@@ -48,6 +48,7 @@ class Item extends NestedSetModel
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
+        static::$use_moderator = config('category.use_moderator', true);
         $this->presenter = config('category.presenter', 'Minhbang\Category\ItemPresenter');
     }
 
@@ -56,7 +57,7 @@ class Item extends NestedSetModel
      */
     public function moderator()
     {
-        return $this->belongsTo('Minhbang\LaravelUser\Group');
+        return static::$use_moderator ? $this->belongsTo('Minhbang\User\Group') : null;
     }
 
     /**

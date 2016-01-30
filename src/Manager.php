@@ -1,7 +1,7 @@
 <?php
 namespace Minhbang\Category;
 
-use Minhbang\LaravelKit\Traits\Presenter\NestablePresenter;
+use Minhbang\Kit\Traits\Presenter\NestablePresenter;
 
 /**
  * Class Manager
@@ -93,7 +93,7 @@ class Manager
      */
     public function listRoots($attribute = 'title', $key = 'id')
     {
-        return $this->roots()->lists($attribute, $key)->all();
+        return $this->roots()->pluck($attribute, $key)->all();
     }
 
     /**

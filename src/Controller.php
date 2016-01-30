@@ -1,10 +1,15 @@
 <?php
 namespace Minhbang\Category;
 
-use Minhbang\LaravelKit\Extensions\BackendController;
-use Minhbang\LaravelKit\Traits\Controller\QuickUpdateActions;
+use Minhbang\Kit\Extensions\BackendController;
+use Minhbang\Kit\Traits\Controller\QuickUpdateActions;
 use Request;
 
+/**
+ * Class Controller
+ *
+ * @package Minhbang\Category
+ */
 class Controller extends BackendController
 {
     use QuickUpdateActions;
@@ -75,13 +80,14 @@ class Controller extends BackendController
         $nestable = $this->manager->nestable();
         $types = $this->manager->typeNames();
         $current = $this->type;
-        $user_groups = app('user-manager')->listGroups();
+        $use_moderator = Item::$use_moderator;
+        $user_groups = $use_moderator ? app('user-manager')->listGroups(): [];
         $this->buildHeading(
             [trans('category::common.manage'), "[{$types[$current]}]"],
             'fa-sitemap',
             ['#' => trans('category::common.category')]
         );
-        $use_moderator = Item::$use_moderator;
+
 
         return view(
             $this->views['index'],

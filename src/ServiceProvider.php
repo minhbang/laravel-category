@@ -26,13 +26,18 @@ class ServiceProvider extends BaseServiceProvider
         $this->loadViewsFrom(__DIR__ . '/../views', 'category');
         $this->publishes(
             [
-                __DIR__ . '/../views'                           => base_path('resources/views/vendor/category'),
-                __DIR__ . '/../lang'                            => base_path('resources/lang/vendor/category'),
-                __DIR__ . '/../config/category.php'             => config_path('category.php'),
-                __DIR__ . '/../database/migrations/' .
-                '2015_09_16_155451_create_categories_table.php' =>
-                    database_path('migrations/2015_09_16_155451_create_categories_table.php'),
+                __DIR__ . '/../views'               => base_path('resources/views/vendor/category'),
+                __DIR__ . '/../lang'                => base_path('resources/lang/vendor/category'),
+                __DIR__ . '/../config/category.php' => config_path('category.php'),
             ]
+        );
+
+        $this->publishes(
+            [
+                __DIR__ . '/../database/migrations/2015_09_16_155451_create_categories_table.php' =>
+                    database_path('migrations/2015_09_16_155451_create_categories_table.php'),
+            ],
+            'db'
         );
 
         if (config('category.add_route') && !$this->app->routesAreCached()) {

@@ -1,7 +1,7 @@
 <?php
 namespace Minhbang\Category;
 
-use Minhbang\LaravelKit\Extensions\Request;
+use Minhbang\Kit\Extensions\Request;
 
 /**
  * Class ItemRequest

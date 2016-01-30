@@ -1,6 +1,6 @@
 <?php
 Route::group(
-    ['prefix' => 'backend', 'namespace' => 'Minhbang\Category'],
+    ['prefix' => 'backend', 'namespace' => 'Minhbang\Category', 'middleware' => config('category.middlewares')],
     function () {
         Route::group(
             ['prefix' => 'category', 'as' => 'backend.category.'],
