@@ -135,7 +135,7 @@ class Controller extends BackendController
         $method = 'post';
 
         return view(
-            $this->views['index'],
+            $this->views['form'],
             compact('parent_title', 'url', 'method', 'category')
         );
     }
