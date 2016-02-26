@@ -66,11 +66,11 @@ class Manager
      *
      * @param \Minhbang\Category\Item|mixed|null $selected
      *
-     * @return array
+     * @return string
      */
     public function tree($selected = null)
     {
-        return $this->toTree($this->roots(), $selected);
+        return $this->toTree($this->typeRoot(), $selected);
     }
 
     /**
