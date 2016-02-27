@@ -4,7 +4,7 @@ return [
     'manage'         => 'Manage Category',
     'parent'         => 'Parent Category',
     'title'          => 'Title',
-    'slug'           => 'SEO title',
+    'slug'           => 'Slug',
     'moderator_id'   => 'Moderator',
     'moderator'      => 'Moderator',
     'no_moderator'   => '— No moderator —',
