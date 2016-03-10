@@ -46,7 +46,7 @@ class ServiceProvider extends BaseServiceProvider
         // pattern filters
         $router->pattern('category', '[0-9]+');
         // model bindings
-        $router->model('category', 'Minhbang\Category\Item');
+        $router->model('category', 'Minhbang\Category\Category');
     }
 
     /**
@@ -57,9 +57,9 @@ class ServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/category.php', 'category');
-        $this->app['category'] = $this->app->share(
+        $this->app['category-manager'] = $this->app->share(
             function () {
-                return new Category(
+                return new Manager(
                     config('category.types'),
                     config('category.max_depth')
                 );
@@ -68,7 +68,7 @@ class ServiceProvider extends BaseServiceProvider
         // add Category alias
         $this->app->booting(
             function () {
-                AliasLoader::getInstance()->alias('Category', Facade::class);
+                AliasLoader::getInstance()->alias('CategoryManager', Facade::class);
             }
         );
     }
@@ -80,6 +80,6 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function provides()
     {
-        return ['category'];
+        return ['category-manager'];
     }
 }

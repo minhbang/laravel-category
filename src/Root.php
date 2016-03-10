@@ -50,9 +50,7 @@ class Root
      */
     public function nestable()
     {
-        return $this->toNestable($this->node, $this->max_depth, false, function ($query) {
-            return $query->with('translations');
-        });
+        return $this->toNestable($this->node, $this->max_depth);
     }
 
     /**
@@ -74,9 +72,7 @@ class Root
      */
     public function tree($selected = null)
     {
-        return $this->toTree($this->node, $selected, false, function ($query) {
-            return $query->with('translations');
-        });
+        return $this->toTree($this->node, $selected);
     }
 
     /**

@@ -23,6 +23,7 @@ trait Categorized
      *
      * @param \Illuminate\Database\Query\Builder $query
      * @param \Minhbang\Category\Category $category
+     *
      * @return \Illuminate\Database\Query\Builder
      */
     public function scopeCategorized($query, $category = null)
@@ -31,12 +32,13 @@ trait Categorized
             return $query->with('category');
         }
         $ids = $category->descendantsAndSelf()->pluck('id')->all();
-        return $query->with('category')
-            ->whereIn("{$this->table}.category_id", $ids);
+
+        return $query->with('category')->whereIn("{$this->table}.category_id", $ids);
     }
 
     /**
      * @param \Illuminate\Database\Query\Builder $query
+     *
      * @return \Illuminate\Database\Query\Builder
      */
     public function scopeWithCategoryTitle($query)

@@ -1,79 +1,105 @@
 <?php
 namespace Minhbang\Category;
 
-use Session;
+use Laracasts\Presenter\PresentableTrait;
+use Minhbang\Kit\Extensions\NestedSetModel;
 
 /**
- * Class Category
+ * App\Item
  *
- * @package Minhbang\Category
+ * @property integer $id
+ * @property integer $parent_id
+ * @property integer $lft
+ * @property integer $rgt
+ * @property integer $depth
+ * @property string $title
+ * @property string $slug
+ * @property integer $moderator_id
+ * @property-read string $url
+ * @property-read \Minhbang\Category\Category $parent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Minhbang\Category\Category[] $children
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Category whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Category whereParentId($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Category whereLft($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Category whereRgt($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Category whereDepth($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Category whereLabel($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Category whereType($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Category whereParams($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Category slug($slug)
+ * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutNode($node)
+ * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutSelf()
+ * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutRoot()
+ * @method static \Illuminate\Database\Query\Builder|\Baum\Node limitDepth($limit)
  */
-class Category
+class Category extends NestedSetModel
 {
-    /**
-     * @var \Minhbang\Category\Category
-     */
-    protected $managers = [];
-    /**
-     * @var int
-     */
-    protected $max_depth;
-    /**
-     * @var array
-     */
-    protected $types = [];
+    use PresentableTrait;
+    protected $table = 'categories';
+    protected $presenter;
+    protected $fillable = ['title', 'slug', 'moderator_id'];
+    public $timestamps = false;
 
     /**
-     * UserManager constructor.
-     *
-     * @param array $types
-     * @param int $max_depth
+     * @var bool
      */
-    public function __construct($types = ['article'], $max_depth = 5)
+    public static $use_moderator = true;
+
+    public function __construct(array $attributes = [])
     {
-        foreach ($types as $type) {
-            $this->types[$type] = trans("category::type.{$type}");
-        }
-        $this->max_depth = $max_depth;
-    }
-
-
-    /**
-     * Lấy manager của category $type
-     *
-     * @param string|null $key
-     * @param string|null $type
-     *
-     * @return \Minhbang\Category\Manager
-     */
-    public function manage($type = null, $key = null)
-    {
-        $type = $type ?: config('category.default_type');
-        if (!isset($this->types[$type])) {
-            if ($key) {
-                Session::forget($key);
-            }
-            abort(404, trans('category::type.invalid'));
-        }
-        if (!isset($this->managers[$type])) {
-            $this->managers[$type] = new Manager($type, $this->max_depth);
-        }
-
-        return $this->managers[$type];
+        parent::__construct($attributes);
+        static::$use_moderator = config('category.use_moderator', true);
+        $this->presenter = config('category.presenter', CategoryPresenter::class);
     }
 
     /**
-     * @param string $type
-     * @param mixed $default
-     *
-     * @return array
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function typeNames($type = null, $default = false)
+    public function moderator()
     {
-        if ($type) {
-            return isset($this->types[$type]) ? $this->types[$type] : $default;
+        return static::$use_moderator ? $this->belongsTo('Minhbang\User\Group') : null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrlAttribute()
+    {
+        return route('category.show', ['slug' => $this->slug]);
+    }
+
+    /**
+     * @param \Illuminate\Database\Query\Builder|static $query
+     * @param string $slug
+     *
+     * @return \Illuminate\Database\Query\Builder|static
+     */
+    public function scopeSlug($query, $slug)
+    {
+        return $query->where('slug', $slug);
+    }
+
+    /**
+     * @param string $slug
+     *
+     * @return static|null
+     */
+    public static function findBySlug($slug)
+    {
+        return static::slug($slug)->first();
+    }
+
+    /**
+     * @param $slug
+     *
+     * @return \Minhbang\Category\Category
+     */
+    public static function findRootBySlugOrCreate($slug)
+    {
+        if ($instance = static::findBySlug($slug)) {
+            return $instance;
         } else {
-            return $this->types;
+            return static::create(['title' => $slug, 'slug' => $slug]);
         }
     }
 }
