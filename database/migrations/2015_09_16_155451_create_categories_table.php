@@ -24,8 +24,6 @@ class CreateCategoriesTable extends Migration
                 $table->integer('depth')->nullable();
 
                 // Normal columns
-                $table->string('title', 255);
-                $table->string('slug', 255)->unique();
                 $table->integer('moderator_id')->unsigned()->nullable();
             }
         );

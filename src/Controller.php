@@ -4,6 +4,7 @@ namespace Minhbang\Category;
 use Minhbang\Kit\Extensions\BackendController;
 use Minhbang\Kit\Traits\Controller\QuickUpdateActions;
 use Request;
+use LocaleManager;
 
 /**
  * Class Controller
@@ -81,7 +82,7 @@ class Controller extends BackendController
         $types = $this->manager->typeNames();
         $current = $this->type;
         $use_moderator = Category::$use_moderator;
-        $user_groups = $use_moderator ? app('user-manager')->listGroups(): [];
+        $user_groups = $use_moderator ? app('user-manager')->listGroups() : [];
         $this->buildHeading(
             [trans('category::common.manage'), "[{$types[$current]}]"],
             'fa-sitemap',
@@ -136,7 +137,7 @@ class Controller extends BackendController
 
         return view(
             $this->views['form'],
-            compact('parent_title', 'url', 'method', 'category')
+            compact('parent_title', 'url', 'method', 'category') + LocaleManager::compact()
         );
     }
 
@@ -202,7 +203,7 @@ class Controller extends BackendController
      */
     public function show(Category $category)
     {
-        return view($this->views['show'], compact('category'));
+        return view($this->views['show'], compact('category') + LocaleManager::compact());
     }
 
     /**
@@ -219,7 +220,7 @@ class Controller extends BackendController
         $url = route('backend.category.update', ['category' => $category->id]);
         $method = 'put';
 
-        return view($this->views['form'], compact('parent_title', 'url', 'method', 'category'));
+        return view($this->views['form'], compact('parent_title', 'url', 'method', 'category') + LocaleManager::compact());
     }
 
     /**

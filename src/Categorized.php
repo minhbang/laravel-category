@@ -1,6 +1,8 @@
 <?php
 namespace Minhbang\Category;
 
+use LocaleManager;
+
 /**
  * Class Categorized
  *
@@ -23,6 +25,7 @@ trait Categorized
      *
      * @param \Illuminate\Database\Query\Builder $query
      * @param \Minhbang\Category\Category $category
+     *
      * @return \Illuminate\Database\Query\Builder
      */
     public function scopeCategorized($query, $category = null)
@@ -31,17 +34,25 @@ trait Categorized
             return $query->with('category');
         }
         $ids = $category->descendantsAndSelf()->pluck('id')->all();
+
         return $query->with('category')
             ->whereIn("{$this->table}.category_id", $ids);
     }
 
     /**
      * @param \Illuminate\Database\Query\Builder $query
+     * @param string $locale
+     *
      * @return \Illuminate\Database\Query\Builder
      */
-    public function scopeWithCategoryTitle($query)
+    public function scopeWithCategoryTitle($query, $locale = null)
     {
-        return $query->leftJoin('categories', 'categories.id', '=', "{$this->table}.category_id")
-            ->addSelect('categories.title as category_title');
+        return $query->leftJoin(
+            'category_translations',
+            function ($join) use ($locale) {
+                $join->on('category_translations.category_id', '=', "{$this->table}.category_id")
+                    ->where('category_translations.locale', '=', LocaleManager::getLocale($locale));
+            }
+        )->addSelect('category_translations.title as category_title');
     }
 }
