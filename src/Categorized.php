@@ -15,14 +15,14 @@ trait Categorized
      */
     public function category()
     {
-        return $this->belongsTo('Minhbang\Category\Item');
+        return $this->belongsTo('Minhbang\Category\Category');
     }
 
     /**
      * Tất cả content thuộc $category và con cháu của $category
      *
      * @param \Illuminate\Database\Query\Builder $query
-     * @param \Minhbang\Category\Item $category
+     * @param \Minhbang\Category\Category $category
      * @return \Illuminate\Database\Query\Builder
      */
     public function scopeCategorized($query, $category = null)

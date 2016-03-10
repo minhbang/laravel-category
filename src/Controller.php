@@ -19,7 +19,7 @@ class Controller extends BackendController
     /**
      * Quản lý category
      *
-     * @var \Minhbang\Category\Manager
+     * @var \Minhbang\Category\Root
      */
     protected $manager;
 
@@ -50,7 +50,7 @@ class Controller extends BackendController
             $this->switchType();
             $this->type_fixed = false;
         } else {
-            $this->manager = app('category')->manage($this->type);
+            $this->manager = app('category-manager')->root($this->type);
         }
     }
 
@@ -62,7 +62,7 @@ class Controller extends BackendController
         $key = 'backend.category.type';
         $type = $type ?: session($key, config('category.default_type'));
         session([$key => $type]);
-        $this->manager = app('category')->manage($type);
+        $this->manager = app('category-manager')->root($type);
         $this->type = $type;
     }
 
@@ -80,7 +80,7 @@ class Controller extends BackendController
         $nestable = $this->manager->nestable();
         $types = $this->manager->typeNames();
         $current = $this->type;
-        $use_moderator = Item::$use_moderator;
+        $use_moderator = Category::$use_moderator;
         $user_groups = $use_moderator ? app('user-manager')->listGroups(): [];
         $this->buildHeading(
             [trans('category::common.manage'), "[{$types[$current]}]"],
@@ -108,17 +108,17 @@ class Controller extends BackendController
     /**
      * Show the form for creating a new resource.
      *
-     * @param \Minhbang\Category\Item $category
+     * @param \Minhbang\Category\Category $category
      *
      * @return \Illuminate\View\View
      */
-    public function createChildOf(Item $category)
+    public function createChildOf(Category $category)
     {
         return $this->_create($category);
     }
 
     /**
-     * @param null|\Minhbang\Category\Item $parent
+     * @param null|\Minhbang\Category\Category $parent
      *
      * @return \Illuminate\View\View
      */
@@ -131,7 +131,7 @@ class Controller extends BackendController
             $parent_title = '- ROOT -';
             $url = route('backend.category.store');
         }
-        $category = new Item();
+        $category = new Category();
         $method = 'post';
 
         return view(
@@ -144,11 +144,11 @@ class Controller extends BackendController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Minhbang\Category\ItemRequest $request
+     * @param \Minhbang\Category\CategoryRequest $request
      *
      * @return \Illuminate\View\View
      */
-    public function store(ItemRequest $request)
+    public function store(CategoryRequest $request)
     {
         return $this->_store($request);
     }
@@ -156,12 +156,12 @@ class Controller extends BackendController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Minhbang\Category\ItemRequest $request
-     * @param \Minhbang\Category\Item $category
+     * @param \Minhbang\Category\CategoryRequest $request
+     * @param \Minhbang\Category\Category $category
      *
      * @return \Illuminate\View\View
      */
-    public function storeChildOf(ItemRequest $request, Item $category)
+    public function storeChildOf(CategoryRequest $request, Category $category)
     {
         return $this->_store($request, $category);
     }
@@ -169,17 +169,17 @@ class Controller extends BackendController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Minhbang\Category\ItemRequest $request
-     * @param null|\Minhbang\Category\Item $parent
+     * @param \Minhbang\Category\CategoryRequest $request
+     * @param null|\Minhbang\Category\Category $parent
      *
      * @return \Illuminate\View\View
      */
     public function _store($request, $parent = null)
     {
-        $category = new Item();
+        $category = new Category();
         $category->fill($request->all());
         $category->save();
-        $category->makeChildOf($parent ?: $this->manager->typeRoot());
+        $category->makeChildOf($parent ?: $this->manager->node());
 
         return view(
             '_modal_script',
@@ -196,11 +196,11 @@ class Controller extends BackendController
     /**
      * Display the specified resource.
      *
-     * @param \Minhbang\Category\Item $category
+     * @param \Minhbang\Category\Category $category
      *
      * @return \Illuminate\View\View
      */
-    public function show(Item $category)
+    public function show(Category $category)
     {
         return view($this->views['show'], compact('category'));
     }
@@ -208,11 +208,11 @@ class Controller extends BackendController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param \Minhbang\Category\Item $category
+     * @param \Minhbang\Category\Category $category
      *
      * @return \Illuminate\View\View
      */
-    public function edit(Item $category)
+    public function edit(Category $category)
     {
         $parent = $category->parent;
         $parent_title = $parent->isRoot() ? '- ROOT -' : $parent->title;
@@ -225,12 +225,12 @@ class Controller extends BackendController
     /**
      * Update the specified resource in storage.
      *
-     * @param \Minhbang\Category\ItemRequest $request
-     * @param \Minhbang\Category\Item $category
+     * @param \Minhbang\Category\CategoryRequest $request
+     * @param \Minhbang\Category\Category $category
      *
      * @return \Illuminate\View\View
      */
-    public function update(ItemRequest $request, Item $category)
+    public function update(CategoryRequest $request, Category $category)
     {
         $category->fill($request->all());
         $category->save();
@@ -250,12 +250,12 @@ class Controller extends BackendController
     /**
      * Remove the specified resource from storage.
      *
-     * @param \Minhbang\Category\Item $category
+     * @param \Minhbang\Category\Category $category
      *
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
-    public function destroy(Item $category)
+    public function destroy(Category $category)
     {
         $category->delete();
 
@@ -310,13 +310,13 @@ class Controller extends BackendController
     /**
      * @param string $name
      *
-     * @return null|\Minhbang\Category\Item
+     * @return null|\Minhbang\Category\Category
      */
     protected function getNode($name)
     {
         $id = Request::input($name);
         if ($id) {
-            if ($node = Item::find($id)) {
+            if ($node = Category::find($id)) {
                 return $node;
             } else {
                 return $this->dieAjax();

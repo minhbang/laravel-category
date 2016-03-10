@@ -1,20 +1,22 @@
 <?php
 namespace Minhbang\Category;
 
-use Minhbang\Kit\Extensions\Request;
+use Minhbang\Locale\TranslatableRequest;
 
 /**
- * Class ItemRequest
+ * Class CategoryRequest
  *
  * @package Minhbang\Category
  */
-class ItemRequest extends Request
+class CategoryRequest extends TranslatableRequest
 {
     public $trans_prefix = 'category::common';
     public $rules = [
         'title' => 'required|max:255',
         'slug'  => 'required|max:255',
     ];
+
+    public $translatable = ['title', 'slug'];
 
     /**
      * Get the validation rules that apply to the request.

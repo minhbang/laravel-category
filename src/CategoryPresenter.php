@@ -5,11 +5,11 @@ use Laracasts\Presenter\Presenter;
 use Html;
 
 /**
- * Class ItemPresenter
+ * Class CategoryPresenter
  *
  * @package Minhbang\Category
  */
-class ItemPresenter extends Presenter
+class CategoryPresenter extends Presenter
 {
     /**
      * @return string
@@ -36,7 +36,7 @@ class ItemPresenter extends Presenter
      */
     public function actions($max_depth)
     {
-        if (Item::$use_moderator && $this->entity->depth == 1) {
+        if (Category::$use_moderator && $this->entity->depth == 1) {
             $moderator = Html::linkQuickUpdate(
                 $this->entity->id,
                 $this->entity->moderator_id,

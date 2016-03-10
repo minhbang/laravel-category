@@ -1,7 +1,7 @@
 <?php
 namespace Minhbang\Category;
 
-use Minhbang\Kit\Traits\Presenter\NestablePresenter;
+use Session;
 
 /**
  * Class Manager
@@ -10,113 +10,72 @@ use Minhbang\Kit\Traits\Presenter\NestablePresenter;
  */
 class Manager
 {
-    use NestablePresenter;
     /**
-     * Current type root
-     *
-     * @var \Minhbang\Category\Item
+     * @var \Minhbang\Category\Root[]
      */
-    protected $_type_root;
+    protected $roots = [];
+
     /**
-     * @var \Illuminate\Database\Eloquent\Collection|\Minhbang\Category\Item[]
+     * @var array
      */
-    protected $_roots;
+    protected $types = [];
+
     /**
      * @var int
      */
-    public $max_depth;
+    protected $max_depth;
 
     /**
      * Manager constructor.
      *
-     * @param string $type
+     * @param array $types
      * @param int $max_depth
      */
-    function __construct($type, $max_depth)
+    public function __construct($types = ['article'], $max_depth = 5)
     {
+        foreach ($types as $type) {
+            $this->types[$type] = trans("category::type.{$type}");
+        }
         $this->max_depth = $max_depth;
-        $this->_type_root = Item::firstOrCreate([
-            'title' => $type,
-            'slug'  => $type,
-        ]);
     }
 
-    /**
-     * Render html theo định dạng của jquery nestable plugin
-     *
-     * @return string
-     */
-    public function nestable()
-    {
-        return $this->toNestable($this->roots(), $this->max_depth);
-    }
 
     /**
-     * Tạo data select tag theo định dạng selectize
+     * Lấy root của category $type
      *
-     * @return array
-     */
-    public function selectize()
-    {
-        return $this->toSelectize($this->roots());
-    }
-
-    /**
-     * Tạo tree data cho bootstrap treeview
+     * @param string|null $key
+     * @param string|null $type
      *
-     * @param \Minhbang\Category\Item|mixed|null $selected
-     *
-     * @return string
+     * @return \Minhbang\Category\Root
      */
-    public function tree($selected = null)
+    public function root($type = null, $key = null)
     {
-        return $this->toTree($this->typeRoot(), $selected);
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Collection|\Minhbang\Category\Item[]
-     */
-    public function roots()
-    {
-        if (is_null($this->_roots)) {
-            $this->_roots = $this->_type_root->getImmediateDescendants();
+        $type = $type ?: config('category.default_type');
+        if (!isset($this->types[$type])) {
+            if ($key) {
+                Session::forget($key);
+            }
+            abort(404, trans('category::type.invalid'));
+        }
+        if (!isset($this->roots[$type])) {
+            $this->roots[$type] = new Root($type, $this->max_depth);
         }
 
-        return $this->_roots;
+        return $this->roots[$type];
     }
 
     /**
-     * @param string $attribute
-     * @param string $key
+     * @param string $type
+     * @param mixed $default
      *
      * @return array
      */
-    public function listRoots($attribute = 'title', $key = 'id')
+    public function typeNames($type = null, $default = false)
     {
-        return $this->roots()->pluck($attribute, $key)->all();
-    }
-
-    /**
-     * @return array
-     */
-    public function typeNames()
-    {
-        return app('category')->typeNames();
-    }
-
-    /**
-     * @return string
-     */
-    public function typeName()
-    {
-        return app('category')->typeNames($this->_type_root->slug);
-    }
-
-    /**
-     * @return \Minhbang\Category\Item|static
-     */
-    public function typeRoot()
-    {
-        return $this->_type_root;
+        if ($type) {
+            return isset($this->types[$type]) ? $this->types[$type] : $default;
+        } else {
+            return $this->types;
+        }
     }
 }
