@@ -102,7 +102,7 @@ class Category extends NestedSetModel
     }
 
     /**
-     * @param $slug
+     * @param string $slug
      *
      * @return \Minhbang\Category\Category|null|static
      */
