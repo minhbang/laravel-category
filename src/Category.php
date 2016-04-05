@@ -5,7 +5,7 @@ use Laracasts\Presenter\PresentableTrait;
 use Minhbang\Kit\Extensions\NestedSetModel;
 
 /**
- * App\Item
+ * App\Category
  *
  * @property integer $id
  * @property integer $parent_id
@@ -69,10 +69,10 @@ class Category extends NestedSetModel
     }
 
     /**
-     * @param \Illuminate\Database\Query\Builder|static $query
+     * @param \Illuminate\Database\Query\Builder $query
      * @param string $slug
      *
-     * @return \Illuminate\Database\Query\Builder|static
+     * @return \Illuminate\Database\Query\Builder
      */
     public function scopeSlug($query, $slug)
     {
