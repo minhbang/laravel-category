@@ -31,6 +31,7 @@ use Minhbang\Kit\Extensions\NestedSetModel;
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutSelf()
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutRoot()
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node limitDepth($limit)
+ * @mixin \Eloquent
  */
 class Category extends NestedSetModel
 {
@@ -86,7 +87,7 @@ class Category extends NestedSetModel
      */
     public static function findBySlug($slug)
     {
-        return static::slug($slug)->first();
+        return static::where('slug', $slug)->first();
     }
 
     /**

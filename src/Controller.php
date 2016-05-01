@@ -4,6 +4,10 @@ namespace Minhbang\Category;
 use Minhbang\Kit\Extensions\BackendController;
 use Minhbang\Kit\Traits\Controller\QuickUpdateActions;
 use Request;
+use CategoryManager;
+use UserManager;
+use Response;
+use Session;
 
 /**
  * Class Controller
@@ -27,7 +31,10 @@ class Controller extends BackendController
      * @var string Category type hiện tại
      */
     protected $type;
-
+    /**
+     * @var array
+     */
+    protected $types;
     /**
      * @var bool
      */
@@ -45,12 +52,14 @@ class Controller extends BackendController
     public function __construct()
     {
         parent::__construct();
+        $this->types = CategoryManager::types();
+        abort_if(empty($this->types), 500, 'Category types is empty!...');
 
         if (is_null($this->type)) {
             $this->switchType();
             $this->type_fixed = false;
         } else {
-            $this->manager = app('category-manager')->root($this->type);
+            $this->manager = CategoryManager::root($this->type);
         }
     }
 
@@ -60,10 +69,15 @@ class Controller extends BackendController
     protected function switchType($type = null)
     {
         $key = 'backend.category.type';
-        $type = $type ?: session($key, config('category.default_type'));
-        session([$key => $type]);
-        $this->manager = app('category-manager')->root($type);
-        $this->type = $type;
+        $type = $type ?: session($key, key($this->types));
+        if (isset($this->types[(string)$type])) {
+            $this->type = $type;
+            session([$key => $type]);
+            $this->manager = CategoryManager::root($type);
+        } else {
+            Session::forget($key);
+            abort(404, trans('category::common.invalid_type'));
+        }
     }
 
     /**
@@ -73,15 +87,15 @@ class Controller extends BackendController
      */
     public function index($type = null)
     {
-        if (!$this->type_fixed) {
+        if (!$this->type_fixed && $type) {
             $this->switchType($type);
         }
         $max_depth = $this->manager->max_depth;
         $nestable = $this->manager->nestable();
-        $types = $this->manager->typeNames();
+        $types = $this->manager->types();
         $current = $this->type;
         $use_moderator = Category::$use_moderator;
-        $user_groups = $use_moderator ? app('user-manager')->listGroups(): [];
+        $user_groups = $use_moderator ? UserManager::listGroups() : [];
         $this->buildHeading(
             [trans('category::common.manage'), "[{$types[$current]}]"],
             'fa-sitemap',
@@ -273,11 +287,11 @@ class Controller extends BackendController
      */
     public function data()
     {
-        return response()->json(['html' => $this->manager->nestable()]);
+        return Response::json(['html' => $this->manager->nestable()]);
     }
 
     /**
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\JsonResponse|mixed
      */
     public function move()
     {
@@ -296,7 +310,7 @@ class Controller extends BackendController
                 }
             }
 
-            return response()->json(
+            return Response::json(
                 [
                     'type'    => 'success',
                     'content' => trans('common.order_object_success', ['name' => trans('category::common.item')]),

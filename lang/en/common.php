@@ -14,4 +14,5 @@ return [
     'delete_confirm' => 'Are you sure you want to delete Category: {ITEM_NAME}<br><strong>Notice:</trong> All sub Category will be deleted along!',
     'order_hint'     => 'Drag and drop to change category position',
     'not_found'      => 'Category not found.',
+    'invalid_type'   => 'Invalid Category type...',
 ];

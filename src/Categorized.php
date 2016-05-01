@@ -1,6 +1,8 @@
 <?php
 namespace Minhbang\Category;
 
+use CategoryManager;
+
 /**
  * Class Categorized
  *
@@ -11,11 +13,19 @@ namespace Minhbang\Category;
 trait Categorized
 {
     /**
+     * @return \Minhbang\Category\Root
+     */
+    public function categoryManager()
+    {
+        return CategoryManager::root(static::class);
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function category()
     {
-        return $this->belongsTo('Minhbang\Category\Category');
+        return $this->belongsTo(Category::class);
     }
 
     /**

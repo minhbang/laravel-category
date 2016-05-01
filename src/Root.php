@@ -2,6 +2,7 @@
 namespace Minhbang\Category;
 
 use Minhbang\Kit\Traits\Presenter\NestablePresenter;
+use CategoryManager;
 
 /**
  * Class Root
@@ -12,7 +13,14 @@ use Minhbang\Kit\Traits\Presenter\NestablePresenter;
 class Root
 {
     use NestablePresenter;
-
+    /**
+     * @var string
+     */
+    protected $type;
+    /**
+     * @var string
+     */
+    protected $suffix;
     /**
      * Node gốc
      *
@@ -26,6 +34,7 @@ class Root
      * @var \Illuminate\Database\Eloquent\Collection|\Minhbang\Category\Category[]
      */
     protected $roots;
+
     /**
      * @var int
      */
@@ -36,11 +45,13 @@ class Root
      *
      * @param string $type
      * @param int $max_depth
+     * @param string $suffix
      */
-    function __construct($type, $max_depth)
+    function __construct($type, $max_depth, $suffix = null)
     {
+        $this->type = $type;
         $this->max_depth = $max_depth;
-        $this->node = Category::findRootBySlugOrCreate($type);
+        $this->suffix = $suffix;
     }
 
     /**
@@ -50,7 +61,7 @@ class Root
      */
     public function nestable()
     {
-        return $this->toNestable($this->node, $this->max_depth);
+        return $this->toNestable($this->node(), $this->max_depth);
     }
 
     /**
@@ -72,46 +83,38 @@ class Root
      */
     public function tree($selected = null)
     {
-        return $this->toTree($this->node, $selected);
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Collection|\Minhbang\Category\Category[]
-     */
-    public function roots()
-    {
-        if (is_null($this->roots)) {
-            $this->roots = $this->node->getImmediateDescendants();
-        }
-
-        return $this->roots;
+        return $this->toTree($this->node(), $selected);
     }
 
     /**
      * @param string $attribute
      * @param string $key
      *
-     * @return array
+     * @return array|\Illuminate\Database\Eloquent\Collection|\Minhbang\Category\Category[]
      */
-    public function listRoots($attribute = 'title', $key = 'id')
+    public function roots($attribute = null, $key = 'id')
     {
-        return $this->roots()->pluck($attribute, $key)->all();
+        if (is_null($this->roots)) {
+            $this->roots = $this->node()->getImmediateDescendants();
+        }
+
+        return $attribute ? $this->roots->pluck($attribute, $key)->all() : $this->roots;
     }
 
     /**
      * @return array
      */
-    public function typeNames()
+    public function types()
     {
-        return app('category-manager')->typeNames();
+        return CategoryManager::types($this->type, '*');
     }
 
     /**
      * @return string
      */
-    public function typeName()
+    public function type()
     {
-        return app('category-manager')->typeNames($this->node->slug);
+        return CategoryManager::types($this->type, $this->suffix);
     }
 
     /**
@@ -121,6 +124,35 @@ class Root
      */
     public function node()
     {
+        if (!$this->node) {
+            $this->node = Category::findRootBySlugOrCreate(CategoryManager::typeValue($this->type, $this->suffix));
+        }
+
         return $this->node;
+    }
+
+    /**
+     * @param array $suffixs
+     * @param string $url
+     * @param string $size
+     * @param string $active
+     * @param string $default
+     *
+     * @return array
+     */
+    public function buttons($suffixs, $url, $size = 'sm', $active = 'primary', $default = 'white')
+    {
+        $buttons = [];
+        if ($this->suffix) {
+            foreach ($suffixs as $suffix) {
+                $buttons[] = [
+                    str_replace('TYPE', $suffix, $url),
+                    CategoryManager::types($this->type, $suffix),
+                    ['size' => $size, 'type' => $suffix == $this->suffix ? $active : $default],
+                ];
+            }
+        }
+
+        return $buttons;
     }
 }
