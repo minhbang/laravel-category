@@ -3,102 +3,107 @@ namespace Minhbang\Category;
 
 /**
  * Class Manager
+ * Quản lý tất cả category types
  *
  * @package Minhbang\Category
  */
 class Manager
 {
     /**
-     * Danh sách node gốc của các category types,
-     * key chính là resource class name, vd: '\Minhbang\Article\Article'
+     * Danh sách category types
      *
-     * @var \Minhbang\Category\Root[]
+     * @var \Minhbang\Category\Type[]
      */
-    protected $roots = [];
+    protected $types = [];
 
     /**
      * Danh sách type titles
      *
      * @var array
      */
-    protected $types = [];
+    protected $titles = [];
 
     /**
-     * Đăng ký một category resource type
+     * Đăng ký một category type
      *
-     * @param string $type Resource class name
-     * @param string $title Type title
-     * @param int $max_depth
-     * @param string $suffix Dùng khi đăng ký 1 resource có nhiều category type, vd: article có news, page...
+     * @param string $class Content class name
+     * @param array $settings
+     * @param array $subtypes
      */
-    public function register($type, $title, $max_depth, $suffix = null)
+    public function register($class, $settings, $subtypes = [])
     {
-        $key = $this->typeValue($type, $suffix);
-        $type = $this->typeValue($type);
-        $this->types[$key] = $title;
-        $this->roots[$key] = new Root($type, $max_depth, $suffix);
-    }
-
-    /**
-     * @param string $type
-     * @param string $suffix
-     *
-     * @return \Minhbang\Category\Root
-     */
-    public function root($type, $suffix = null)
-    {
-        $type = $this->typeValue($type, $suffix);
-        abort_unless(isset($this->roots[$type]), 500, "Category Manager: unregistered category type for $type!");
-
-        return $this->roots[$type];
-    }
-
-    /**
-     * @param string $type
-     * @param string $suffix
-     * @param mixed $default
-     *
-     * @return string|mixed
-     */
-    public function types($type = null, $suffix = null, $default = null)
-    {
-        if ($type && $suffix === '*') {
-            $pattern = $this->typeValue($type) . '*';
-
-            return array_where($this->types, function ($key) use ($pattern) {
-                return str_is($pattern, $key);
-            });
+        $max_depth = array_get($settings, 'max_depth');
+        $title = array_get($settings, 'title');
+        $name = $this->getName($class);
+        if ($subtypes) {
+            foreach ($subtypes as $type) {
+                $this->addType("{$name}-{$type}", "{$title}.{$type}", $max_depth);
+            }
         } else {
-            return array_get($this->types, $this->typeValue($type, $suffix), $default);
+            $this->addType($name, $title, $max_depth);
         }
     }
 
     /**
      * @param string $name
-     * @param string $suffix
-     *
-     * @return string
+     * @param string $title
+     * @param int $max_depth
      */
-    public function typeValue($name, $suffix = null)
+    protected function addType($name, $title, $max_depth)
     {
-        return $name ?
-            strtolower(str_replace(['_', '\\', '.'], '-', $name)) . ($suffix ? "-{$suffix}" : '') :
-            null;
+        $title = trans($title);
+        $this->titles[$name] = $title;
+        $this->types[$name] = new Type($name, $title, $max_depth);
     }
 
     /**
-     * @param string $name
-     * @param array $suffixs
+     * Đã đăng ký $name type chưa?
      *
+     * @param $type
+     *
+     * @return bool
+     */
+    public function has($type)
+    {
+        return isset($this->types[$type]);
+    }
+
+    /**
+     * Lấy Category manager cho $model
+     *
+     * @param string|object $model
+     * @param string $subtype
+     *
+     * @return \Minhbang\Category\Type
+     */
+    public function of($model, $subtype = null)
+    {
+        $model = is_string($model) ? $model : get_class($model);
+        $name = $this->getName($model, $subtype);
+        abort_unless(isset($this->types[$name]), 500, "Category Manager: Unregistered category type for $model!");
+
+        return $this->types[$name];
+    }
+
+    /**
      * @return array
      */
-    public function typeValues($name, $suffixs = [])
+    public function titles()
     {
-        return array_map(
-            function ($suffix) use ($name) {
-                return $this->typeValue($name, $suffix);
-            },
-            $suffixs
-        );
+        return $this->titles;
+    }
+
+    /**
+     * Chuyển model class name thành category type name,
+     * Ex: Minhbang\Article\Article => minhbang-article-article-{subtype?}
+     *
+     * @param string $class
+     * @param string $subtype
+     *
+     * @return string
+     */
+    public function getName($class, $subtype = null)
+    {
+        return strtolower(str_replace(['_', '\\', '.'], '-', $class)) . ($subtype ? "-{$subtype}" : '');
     }
 }

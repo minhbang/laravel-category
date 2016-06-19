@@ -23,7 +23,7 @@ class Controller extends BackendController
     /**
      * Quản lý category
      *
-     * @var \Minhbang\Category\Root
+     * @var \Minhbang\Category\Type
      */
     protected $manager;
 
@@ -32,6 +32,8 @@ class Controller extends BackendController
      */
     protected $type;
     /**
+     * All category types
+     *
      * @var array
      */
     protected $types;
@@ -49,17 +51,19 @@ class Controller extends BackendController
         'show'  => 'category::show',
     ];
 
+    /**
+     * Controller constructor.
+     */
     public function __construct()
     {
         parent::__construct();
-        $this->types = CategoryManager::types();
-        abort_if(empty($this->types), 500, 'Category types is empty!...');
-
+        $this->types = CategoryManager::titles();
+        abort_if(empty($this->types), 404, 'Category types is empty...');
         if (is_null($this->type)) {
             $this->switchType();
             $this->type_fixed = false;
         } else {
-            $this->manager = CategoryManager::root($this->type);
+            $this->manager = CategoryManager::of($this->type);
         }
     }
 
@@ -70,10 +74,10 @@ class Controller extends BackendController
     {
         $key = 'backend.category.type';
         $type = $type ?: session($key, key($this->types));
-        if (isset($this->types[(string)$type])) {
+        if (CategoryManager::has($type)) {
             $this->type = $type;
             session([$key => $type]);
-            $this->manager = CategoryManager::root($type);
+            $this->manager = CategoryManager::of($type);
         } else {
             Session::forget($key);
             abort(404, trans('category::common.invalid_type'));
@@ -92,14 +96,26 @@ class Controller extends BackendController
         }
         $max_depth = $this->manager->max_depth;
         $nestable = $this->manager->nestable();
-        $types = $this->manager->types();
+        $types = $this->types;
         $current = $this->type;
         $use_moderator = Category::$use_moderator;
         $user_groups = $use_moderator ? UserManager::listGroups() : [];
         $this->buildHeading(
             [trans('category::common.manage'), "[{$types[$current]}]"],
             'fa-sitemap',
-            ['#' => trans('category::common.category')]
+            ['#' => trans('category::common.category')],
+            [
+                [
+                    route('backend.category.create'),
+                    trans('category::common.create_item'),
+                    ['class' => 'modal-link', 'type' => 'primary', 'size' => 'sm', 'icon' => 'plus-sign'],
+                    [
+                        'title'  => trans('common.create_object', ['name' => trans('category::common.item')]),
+                        'label'  => trans('common.save'),
+                        'icon'   => 'align-justify'
+                    ],
+                ],
+            ]
         );
 
 
@@ -193,7 +209,7 @@ class Controller extends BackendController
         $category = new Category();
         $category->fill($request->all());
         $category->save();
-        $category->makeChildOf($parent ?: $this->manager->node());
+        $category->makeChildOf($parent ?: $this->manager->root());
 
         return view(
             '_modal_script',

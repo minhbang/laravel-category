@@ -6,34 +6,37 @@ use CategoryManager;
 
 /**
  * Class Root
- * Quản lý 'Node gốc' của một category 'type'
+ * Quản lý một category 'type', ex: Article, Product,...
+ * Một Type gồm 1 node root dùng quản lý, và các node con mới thật sự chứa 'content'
  *
  * @package Minhbang\Category
  */
-class Root
+class Type
 {
     use NestablePresenter;
     /**
+     * Được tạo từ content class name
+     *
      * @var string
      */
-    protected $type;
+    protected $name;
     /**
      * @var string
      */
-    protected $suffix;
+    protected $title;
     /**
      * Node gốc
      *
      * @var \Minhbang\Category\Category
      */
-    protected $node;
+    protected $root;
 
     /**
-     * Danh sách 'nodes con' TRỰC TIẾP của 'node gốc' (immediate descendants)
+     * Cached 'nodes con' TRỰC TIẾP của root (immediate descendants)
      *
      * @var \Illuminate\Database\Eloquent\Collection|\Minhbang\Category\Category[]
      */
-    protected $roots;
+    protected $root1s;
 
     /**
      * @var int
@@ -43,15 +46,15 @@ class Root
     /**
      * Manager constructor.
      *
-     * @param string $type
+     * @param string $name
+     * @param string $title
      * @param int $max_depth
-     * @param string $suffix
      */
-    function __construct($type, $max_depth, $suffix = null)
+    function __construct($name, $title, $max_depth)
     {
-        $this->type = $type;
+        $this->name = $name;
+        $this->title = $title;
         $this->max_depth = $max_depth;
-        $this->suffix = $suffix;
     }
 
     /**
@@ -61,7 +64,7 @@ class Root
      */
     public function nestable()
     {
-        return $this->toNestable($this->node(), $this->max_depth);
+        return $this->toNestable($this->root(), $this->max_depth);
     }
 
     /**
@@ -71,7 +74,7 @@ class Root
      */
     public function selectize()
     {
-        return $this->toSelectize($this->roots());
+        return $this->toSelectize($this->root1s());
     }
 
     /**
@@ -83,7 +86,7 @@ class Root
      */
     public function tree($selected = null)
     {
-        return $this->toTree($this->node(), $selected);
+        return $this->toTree($this->root(), $selected);
     }
 
     /**
@@ -92,29 +95,21 @@ class Root
      *
      * @return array|\Illuminate\Database\Eloquent\Collection|\Minhbang\Category\Category[]
      */
-    public function roots($attribute = null, $key = 'id')
+    public function root1s($attribute = null, $key = 'id')
     {
-        if (is_null($this->roots)) {
-            $this->roots = $this->node()->getImmediateDescendants();
+        if (is_null($this->root1s)) {
+            $this->root1s = $this->root()->getImmediateDescendants();
         }
 
-        return $attribute ? $this->roots->pluck($attribute, $key)->all() : $this->roots;
-    }
-
-    /**
-     * @return array
-     */
-    public function types()
-    {
-        return CategoryManager::types($this->type, '*');
+        return $attribute ? $this->root1s->pluck($attribute, $key)->all() : $this->root1s;
     }
 
     /**
      * @return string
      */
-    public function type()
+    public function title()
     {
-        return CategoryManager::types($this->type, $this->suffix);
+        return $this->title;
     }
 
     /**
@@ -122,17 +117,19 @@ class Root
      *
      * @return \Minhbang\Category\Category
      */
-    public function node()
+    public function root()
     {
-        if (!$this->node) {
-            $this->node = Category::findRootBySlugOrCreate(CategoryManager::typeValue($this->type, $this->suffix));
+        if (!$this->root) {
+            $this->root = Category::findRootBySlugOrCreate(CategoryManager::getName($this->name));
         }
 
-        return $this->node;
+        return $this->root;
     }
 
     /**
-     * @param array $suffixs
+     * Tạo data buttons từ danh sách $suffixs
+     *
+     * @param array $subtypes
      * @param string $url
      * @param string $size
      * @param string $active
@@ -140,19 +137,19 @@ class Root
      *
      * @return array
      */
-    public function buttons($suffixs, $url, $size = 'sm', $active = 'primary', $default = 'white')
+    /*public function buttons($subtypes, $url, $size = 'sm', $active = 'primary', $default = 'white')
     {
         $buttons = [];
-        if ($this->suffix) {
-            foreach ($suffixs as $suffix) {
+        if ($this->subtype) {
+            foreach ($subtypes as $subtype) {
                 $buttons[] = [
-                    str_replace('TYPE', $suffix, $url),
-                    CategoryManager::types($this->type, $suffix),
-                    ['size' => $size, 'type' => $suffix == $this->suffix ? $active : $default],
+                    str_replace('TYPE', $subtype, $url),
+                    CategoryManager::types($this->name, $subtype),
+                    ['size' => $size, 'type' => $subtype == $this->subtype ? $active : $default],
                 ];
             }
         }
 
         return $buttons;
-    }
+    }*/
 }

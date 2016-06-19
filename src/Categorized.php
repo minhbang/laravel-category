@@ -13,11 +13,11 @@ use CategoryManager;
 trait Categorized
 {
     /**
-     * @return \Minhbang\Category\Root
+     * @return \Minhbang\Category\Type
      */
     public function categoryManager()
     {
-        return CategoryManager::root(static::class);
+        return CategoryManager::of(static::class);
     }
 
     /**
