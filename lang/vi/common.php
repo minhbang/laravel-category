@@ -14,5 +14,4 @@ return [
     'delete_confirm' => 'Bạn có chắc chắn muốn xóa Danh mục: {ITEM_NAME}<br><strong>Lưu ý:</trong> Tất cả mục Danh mục con của nó sẽ bị xóa cùng!',
     'order_hint'     => 'Kéo các Danh mục để di chuyển đến vị trí mới',
     'not_found'      => 'Không tìm thấy Danh mục yêu cầu.',
-    'invalid_type'   => 'Invalid Category type...',
 ];

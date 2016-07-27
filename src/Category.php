@@ -3,7 +3,6 @@ namespace Minhbang\Category;
 
 use Laracasts\Presenter\PresentableTrait;
 use Minhbang\Kit\Extensions\NestedSetModel;
-use CategoryManager;
 
 /**
  * App\Category
@@ -32,7 +31,6 @@ use CategoryManager;
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutSelf()
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutRoot()
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node limitDepth($limit)
- * @mixin \Eloquent
  */
 class Category extends NestedSetModel
 {
@@ -67,28 +65,7 @@ class Category extends NestedSetModel
      */
     public function getUrlAttribute()
     {
-        return route('category.show', ['category' => $this->id, 'slug' => $this->slug]);
-    }
-
-    /**
-     * @param bool $self
-     * @param bool $index
-     *
-     * @return array
-     */
-    public function getBreadcrumbs($self = false, $index = false)
-    {
-        /** @var static[] $categories */
-        $categories = $this->getRoot1Path(['id', 'title', 'slug'], $self);
-        $breadcrumbs = $index ? [route('category.index') => trans('category::common.category')] : [];
-        foreach ($categories as $category) {
-            $breadcrumbs[$category->getUrlAttribute()] = $category->title;
-        }
-        if (!$self) {
-            $breadcrumbs['#'] = $this->title;
-        }
-
-        return $breadcrumbs;
+        return route('category.show', ['slug' => $this->slug]);
     }
 
     /**
@@ -109,11 +86,11 @@ class Category extends NestedSetModel
      */
     public static function findBySlug($slug)
     {
-        return static::where('slug', $slug)->first();
+        return static::slug($slug)->first();
     }
 
     /**
-     * @param string $slug
+     * @param $slug
      *
      * @return \Minhbang\Category\Category
      */
@@ -124,15 +101,5 @@ class Category extends NestedSetModel
         } else {
             return static::create(['title' => $slug, 'slug' => $slug]);
         }
-    }
-
-    /**
-     * @param string $class
-     *
-     * @return \Minhbang\Category\Category
-     */
-    public static function findRootByClass($class)
-    {
-        return static::findRootBySlugOrCreate(CategoryManager::getName($class));
     }
 }

@@ -1,109 +1,81 @@
 <?php
 namespace Minhbang\Category;
 
+use Session;
+
 /**
  * Class Manager
- * Quản lý tất cả category types
  *
  * @package Minhbang\Category
  */
 class Manager
 {
     /**
-     * Danh sách category types
-     *
-     * @var \Minhbang\Category\Type[]
+     * @var \Minhbang\Category\Root[]
+     */
+    protected $roots = [];
+
+    /**
+     * @var array
      */
     protected $types = [];
 
     /**
-     * Danh sách type titles
-     *
-     * @var array
+     * @var int
      */
-    protected $titles = [];
+    protected $max_depth;
 
     /**
-     * Đăng ký một category type
+     * Manager constructor.
      *
-     * @param string $class Content class name
-     * @param array $settings
-     * @param array $subtypes
-     */
-    public function register($class, $settings, $subtypes = [])
-    {
-        $max_depth = array_get($settings, 'max_depth');
-        $title = array_get($settings, 'title');
-        $name = $this->getName($class);
-        if ($subtypes) {
-            foreach ($subtypes as $type) {
-                $this->addType("{$name}-{$type}", "{$title}.{$type}", $max_depth);
-            }
-        } else {
-            $this->addType($name, $title, $max_depth);
-        }
-    }
-
-    /**
-     * @param string $name
-     * @param string $title
+     * @param array $types
      * @param int $max_depth
      */
-    protected function addType($name, $title, $max_depth)
+    public function __construct($types = ['article'], $max_depth = 5)
     {
-        $title = trans($title);
-        $this->titles[$name] = $title;
-        $this->types[$name] = new Type($name, $title, $max_depth);
+        foreach ($types as $type) {
+            $this->types[$type] = trans("category::type.{$type}");
+        }
+        $this->max_depth = $max_depth;
     }
 
+
     /**
-     * Đã đăng ký $name type chưa?
+     * Lấy root của category $type
      *
-     * @param $type
+     * @param string|null $key
+     * @param string|null $type
      *
-     * @return bool
+     * @return \Minhbang\Category\Root
      */
-    public function has($type)
+    public function root($type = null, $key = null)
     {
-        return isset($this->types[$type]);
+        $type = $type ?: config('category.default_type');
+        if (!isset($this->types[$type])) {
+            if ($key) {
+                Session::forget($key);
+            }
+            abort(404, trans('category::type.invalid'));
+        }
+        if (!isset($this->roots[$type])) {
+            $this->roots[$type] = new Root($type, $this->max_depth);
+        }
+
+        return $this->roots[$type];
     }
 
     /**
-     * Lấy Category manager cho $model
+     * @param string $type
+     * @param mixed $default
      *
-     * @param string|object $model
-     * @param string $subtype
-     *
-     * @return \Minhbang\Category\Type
-     */
-    public function of($model, $subtype = null)
-    {
-        $model = is_string($model) ? $model : get_class($model);
-        $name = $this->getName($model, $subtype);
-        abort_unless(isset($this->types[$name]), 500, "Category Manager: Unregistered category type for $model!");
-
-        return $this->types[$name];
-    }
-
-    /**
      * @return array
      */
-    public function titles()
+    public function typeNames($type = null, $default = false)
     {
-        return $this->titles;
-    }
-
-    /**
-     * Chuyển model class name thành category type name,
-     * Ex: Minhbang\Article\Article => minhbang-article-article-{subtype?}
-     *
-     * @param string $class
-     * @param string $subtype
-     *
-     * @return string
-     */
-    public function getName($class, $subtype = null)
-    {
-        return strtolower(str_replace(['_', '\\', '.'], '-', $class)) . ($subtype ? "-{$subtype}" : '');
+        if ($type) {
+            return isset($this->types[$type]) ? $this->types[$type] : $default;
+        } else {
+            return $this->types;
+        }
     }
 }

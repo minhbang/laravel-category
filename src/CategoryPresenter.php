@@ -26,7 +26,7 @@ class CategoryPresenter extends Presenter
      */
     public function moderator($name = 'short_name')
     {
-        return $this->entity->moderator ? $this->entity->moderator->{$name} : null;
+        return $this->entity->moderator ? $this->entity->moderator->$name : null;
     }
 
     /**

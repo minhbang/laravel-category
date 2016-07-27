@@ -17,6 +17,8 @@
     ],
     "require": {
         "php": ">=5.5.9",
+        "illuminate/support": "~5.1",
+        "illuminate/html": "5.0.*",
         "baum/baum": "~1.1"
     },
     "require-dev": {

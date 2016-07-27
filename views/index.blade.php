@@ -1,8 +1,15 @@
-@extends('backend.layouts.master')
+@extends('backend.layouts.main')
 @section('content')
 <div class="panel panel-default panel-nestable panel-sidebar">
     <div class="panel-heading clearfix">
         <div class="loading hidden"></div>
+        <a href="{{route('backend.category.create')}}"
+           class="modal-link btn btn-success btn-xs"
+           data-title="{{trans('common.create_object', ['name' => trans('category::common.item')])}}"
+           data-label="{{trans('common.save')}}"
+           data-icon="align-justify">
+            <span class="glyphicon glyphicon-plus-sign"></span> {{trans('category::common.create_item')}}
+        </a>
         <a href="#" data-action="collapseAll" class="nestable_action btn btn-default btn-xs">
             <span class="glyphicon glyphicon-circle-arrow-up"></span>
         </a>

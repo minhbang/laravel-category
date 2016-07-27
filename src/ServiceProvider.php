@@ -4,8 +4,7 @@ namespace Minhbang\Category;
 
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\AliasLoader;
-use Minhbang\Kit\Extensions\BaseServiceProvider;
-use MenuManager;
+use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 /**
  * Class ServiceProvider
@@ -41,15 +40,13 @@ class ServiceProvider extends BaseServiceProvider
             'db'
         );
 
-        $this->mapWebRoutes($router, __DIR__ . '/routes.php', config('category.add_route'));
-
+        if (config('category.add_route') && !$this->app->routesAreCached()) {
+            require __DIR__ . '/routes.php';
+        }
         // pattern filters
         $router->pattern('category', '[0-9]+');
         // model bindings
         $router->model('category', 'Minhbang\Category\Category');
-
-        // Add category menus
-        MenuManager::addItems(config('category.menus'));
     }
 
     /**
@@ -62,7 +59,10 @@ class ServiceProvider extends BaseServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../config/category.php', 'category');
         $this->app['category-manager'] = $this->app->share(
             function () {
-                return new Manager();
+                return new Manager(
+                    config('category.types'),
+                    config('category.max_depth')
+                );
             }
         );
         // add Category alias
