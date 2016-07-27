@@ -3,6 +3,7 @@ namespace Minhbang\Category;
 
 use Laracasts\Presenter\PresentableTrait;
 use Minhbang\Kit\Extensions\NestedSetModel;
+use CategoryManager;
 
 /**
  * App\Category
@@ -66,7 +67,28 @@ class Category extends NestedSetModel
      */
     public function getUrlAttribute()
     {
-        return route('category.show', ['slug' => $this->slug]);
+        return route('category.show', ['category' => $this->id, 'slug' => $this->slug]);
+    }
+
+    /**
+     * @param bool $self
+     * @param bool $index
+     *
+     * @return array
+     */
+    public function getBreadcrumbs($self = false, $index = false)
+    {
+        /** @var static[] $categories */
+        $categories = $this->getRoot1Path(['id', 'title', 'slug'], $self);
+        $breadcrumbs = $index ? [route('category.index') => trans('category::common.category')] : [];
+        foreach ($categories as $category) {
+            $breadcrumbs[$category->getUrlAttribute()] = $category->title;
+        }
+        if (!$self) {
+            $breadcrumbs['#'] = $this->title;
+        }
+
+        return $breadcrumbs;
     }
 
     /**
@@ -91,7 +113,7 @@ class Category extends NestedSetModel
     }
 
     /**
-     * @param $slug
+     * @param string $slug
      *
      * @return \Minhbang\Category\Category
      */
@@ -102,5 +124,15 @@ class Category extends NestedSetModel
         } else {
             return static::create(['title' => $slug, 'slug' => $slug]);
         }
+    }
+
+    /**
+     * @param string $class
+     *
+     * @return \Minhbang\Category\Category
+     */
+    public static function findRootByClass($class)
+    {
+        return static::findRootBySlugOrCreate(CategoryManager::getName($class));
     }
 }
