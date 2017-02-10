@@ -57,14 +57,12 @@ class ServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/category.php', 'category');
-        $this->app['category-manager'] = $this->app->share(
-            function () {
-                return new Manager(
-                    config('category.types'),
-                    config('category.max_depth')
-                );
-            }
-        );
+        $this->app->singleton('category-manager', function () {
+            return new Manager(
+                config('category.types'),
+                config('category.max_depth')
+            );
+        });
         // add Category alias
         $this->app->booting(
             function () {
