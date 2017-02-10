@@ -31,6 +31,11 @@ use Minhbang\Kit\Extensions\NestedSetModel;
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutSelf()
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node withoutRoot()
  * @method static \Illuminate\Database\Query\Builder|\Baum\Node limitDepth($limit)
+ * @property-read \Minhbang\User\Group $moderator
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Category whereTitle($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Category whereSlug($value)
+ * @method static \Illuminate\Database\Query\Builder|\Minhbang\Category\Category whereModeratorId($value)
+ * @mixin \Eloquent
  */
 class Category extends NestedSetModel
 {
@@ -49,7 +54,7 @@ class Category extends NestedSetModel
     {
         parent::__construct($attributes);
         static::$use_moderator = config('category.use_moderator', true);
-        $this->presenter = config('category.presenter', CategoryPresenter::class);
+        $this->presenter       = config('category.presenter', CategoryPresenter::class);
     }
 
     /**

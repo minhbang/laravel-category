@@ -5,8 +5,7 @@ namespace Minhbang\Category;
  * Class Categorized
  *
  * @package Minhbang\Category
- * @property-read string $table
- * @method \Illuminate\Database\Eloquent\Relations\BelongsTo belongsTo($related, $foreignKey = null, $otherKey = null, $relation = null)
+ * @mixin \Eloquent
  */
 trait Categorized
 {
@@ -44,6 +43,6 @@ trait Categorized
     public function scopeWithCategoryTitle($query)
     {
         return $query->leftJoin('categories', 'categories.id', '=', "{$this->table}.category_id")
-            ->addSelect('categories.title as category_title');
+                     ->addSelect('categories.title as category_title');
     }
 }

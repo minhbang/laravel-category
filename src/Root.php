@@ -2,6 +2,7 @@
 namespace Minhbang\Category;
 
 use Minhbang\Kit\Traits\Presenter\NestablePresenter;
+use Minhbang\Kit\Support\VnString;
 
 /**
  * Class Root
@@ -40,7 +41,7 @@ class Root
     function __construct($type, $max_depth)
     {
         $this->max_depth = $max_depth;
-        $this->node = Category::findRootBySlugOrCreate($type);
+        $this->node      = Category::findRootBySlugOrCreate($type);
     }
 
     /**
@@ -122,5 +123,27 @@ class Root
     public function node()
     {
         return $this->node;
+    }
+
+    /**
+     * @param array $path
+     *
+     * @return int
+     */
+    public function createNodesFromPath($path)
+    {
+        $root = $this->node;
+        foreach ($path as $title) {
+            if ($node = $root->descendants()->where('title', $title)->first()) {
+                $root = $node;
+            } else {
+                $node = Category::create(['title' => $title, 'slug' => VnString::to_slug($title)]);
+                $node->makeChildOf($root);
+                $root = $node;
+            }
+
+        }
+
+        return $root->id;
     }
 }
