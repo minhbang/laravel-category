@@ -5,6 +5,7 @@ namespace Minhbang\Category;
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+use MenuManager;
 
 /**
  * Class ServiceProvider
@@ -24,6 +25,9 @@ class ServiceProvider extends BaseServiceProvider
     {
         $this->loadTranslationsFrom(__DIR__ . '/../lang', 'category');
         $this->loadViewsFrom(__DIR__ . '/../views', 'category');
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        $this->loadRoutesFrom(__DIR__ . '/routes.php');
+
         $this->publishes(
             [
                 __DIR__ . '/../views'               => base_path('resources/views/vendor/category'),
@@ -32,21 +36,12 @@ class ServiceProvider extends BaseServiceProvider
             ]
         );
 
-        $this->publishes(
-            [
-                __DIR__ . '/../database/migrations/2015_09_16_155451_create_categories_table.php' =>
-                    database_path('migrations/2015_09_16_155451_create_categories_table.php'),
-            ],
-            'db'
-        );
-
-        if (config('category.add_route') && !$this->app->routesAreCached()) {
-            require __DIR__ . '/routes.php';
-        }
         // pattern filters
         $router->pattern('category', '[0-9]+');
         // model bindings
         $router->model('category', 'Minhbang\Category\Category');
+        // Add category menus
+        MenuManager::addItems(config('category.menus'));
     }
 
     /**
@@ -58,10 +53,7 @@ class ServiceProvider extends BaseServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/category.php', 'category');
         $this->app->singleton('category-manager', function () {
-            return new Manager(
-                config('category.types'),
-                config('category.max_depth')
-            );
+            return new Manager();
         });
         // add Category alias
         $this->app->booting(

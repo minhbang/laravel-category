@@ -14,7 +14,7 @@ trait Categorized
      */
     public function category()
     {
-        return $this->belongsTo('Minhbang\Category\Category');
+        return $this->belongsTo(Category::class);
     }
 
     /**

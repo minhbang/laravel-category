@@ -1,14 +1,16 @@
 <?php
+
 namespace Minhbang\Category;
 
-use Session;
+use Illuminate\Support\Collection;
+use Kit;
 
 /**
  * Class Manager
  *
  * @package Minhbang\Category
  */
-class Manager
+class Manager extends Collection
 {
     /**
      * @var \Minhbang\Category\Root[]
@@ -21,61 +23,57 @@ class Manager
     protected $types = [];
 
     /**
-     * @var int
-     */
-    protected $max_depth;
-
-    /**
-     * Manager constructor.
-     *
-     * @param array $types
-     * @param int $max_depth
-     */
-    public function __construct($types = ['article'], $max_depth = 5)
-    {
-        foreach ($types as $type) {
-            $this->types[$type] = trans("category::type.{$type}");
-        }
-        $this->max_depth = $max_depth;
-    }
-
-
-    /**
      * Lấy root của category $type
      *
-     * @param string|null $key
-     * @param string|null $type
+     * @param string $type
      *
      * @return \Minhbang\Category\Root
      */
-    public function root($type = null, $key = null)
+    public function root($type)
     {
-        $type = $type ?: config('category.default_type');
-        if (!isset($this->types[$type])) {
-            if ($key) {
-                Session::forget($key);
-            }
-            abort(404, trans('category::type.invalid'));
-        }
-        if (!isset($this->roots[$type])) {
-            $this->roots[$type] = new Root($type, $this->max_depth);
-        }
+        abort_unless($this->has($type), 404, trans('category::common.invalid'));
 
-        return $this->roots[$type];
+        return $this->get($type)['root'];
     }
 
     /**
      * @param string $type
      * @param mixed $default
      *
-     * @return array
+     * @return array|string
      */
     public function typeNames($type = null, $default = false)
     {
-        if ($type) {
-            return isset($this->types[$type]) ? $this->types[$type] : $default;
-        } else {
-            return $this->types;
-        }
+        return array_get($this->mapWithKeys(function ($item) {
+            return [$item['alias'] => $item['title']];
+        }), $type, $default);
+    }
+
+    /**
+     * Đăng ký một model có sử dụng category
+     * $sub: ví dụ news: Bài viết dạng Tin tức, message: Bài viết dạng thông báo...
+     *
+     * @param string|mixed $model
+     * @param string $sub
+     * @param string $sub_title
+     */
+    public function register($model, $sub = null, $sub_title = null)
+    {
+        $alias = Kit::alias($model) . ($sub ? "_$sub" : '');
+        $this->put($alias, [
+            'alias' => $alias,
+            'title' => Kit::title($model) . ($sub_title ? " - $sub_title" : ''),
+            'root'  => new Root($alias, config('category.max_depth')),
+        ]);
+    }
+
+    /**
+     * @param string $attribute
+     *
+     * @return array|mixed
+     */
+    public function firstType($attribute = null)
+    {
+        return array_get($this->first(), $attribute);
     }
 }

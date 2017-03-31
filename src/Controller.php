@@ -1,9 +1,9 @@
-<?php
-namespace Minhbang\Category;
+<?php namespace Minhbang\Category;
 
 use Minhbang\Kit\Extensions\BackendController;
 use Minhbang\Kit\Traits\Controller\QuickUpdateActions;
 use Request;
+use CategoryManager;
 
 /**
  * Class Controller
@@ -17,21 +17,18 @@ class Controller extends BackendController
     protected $moderator = true;
 
     /**
-     * Quản lý category
-     *
+     * @var string Category type hiện tại
+     */
+    protected $type;
+    /**
      * @var \Minhbang\Category\Root
      */
     protected $manager;
 
     /**
-     * @var string Category type hiện tại
-     */
-    protected $type;
-
-    /**
      * @var bool
      */
-    protected $type_fixed = true;
+    protected $type_changeable = true;
 
     /**
      * @var array
@@ -40,18 +37,30 @@ class Controller extends BackendController
         'form'  => 'category::form',
         'index' => 'category::index',
         'show'  => 'category::show',
+        'empty' => 'category::empty',
     ];
 
     public function __construct()
     {
         parent::__construct();
+        $this->type_changeable = is_null($this->type);
+    }
 
-        if (is_null($this->type)) {
-            $this->switchType();
-            $this->type_fixed = false;
-        } else {
-            $this->manager = app('category-manager')->root($this->type);
+    /**
+     * @return \Minhbang\Category\Root
+     */
+    protected function getManager()
+    {
+        if (is_null($this->manager)) {
+            if ($this->type_changeable) {
+                $this->type = session('backend.category.type', CategoryManager::firstType('alias'));
+            }
+            abort_unless(CategoryManager::has($this->type), 404, trans('category::common.invalid'));
+
+            $this->manager = CategoryManager::root($this->type);
         }
+
+        return $this->manager;
     }
 
     /**
@@ -59,11 +68,10 @@ class Controller extends BackendController
      */
     protected function switchType($type = null)
     {
-        $key = 'backend.category.type';
-        $type = $type ?: session($key, config('category.default_type'));
-        session([$key => $type]);
-        $this->manager = app('category-manager')->root($type);
-        $this->type = $type;
+        if ($this->type_changeable) {
+            $this->type = $type ?: CategoryManager::firstType('alias');
+            session(['backend.category.type' => $this->type]);
+        }
     }
 
     /**
@@ -73,15 +81,21 @@ class Controller extends BackendController
      */
     public function index($type = null)
     {
-        if (!$this->type_fixed) {
-            $this->switchType($type);
+        if (CategoryManager::isEmpty()) {
+            $this->buildHeading(trans('category::common.manage'), 'fa-sitemap',
+                ['#' => trans('category::common.category')]
+            );
+
+            return view($this->views['empty']);
         }
-        $max_depth = $this->manager->max_depth;
-        $nestable = $this->manager->nestable();
-        $types = $this->manager->typeNames();
+
+        $this->switchType($type);
+        $max_depth = $this->getManager()->max_depth;
+        $nestable = $this->getManager()->nestable();
+        $types = $this->getManager()->typeNames();
         $current = $this->type;
         $use_moderator = Category::$use_moderator;
-        $user_groups = $use_moderator ? app('user-manager')->listGroups(): [];
+        $user_groups = $use_moderator ? app('user-manager')->listGroups() : [];
         $this->buildHeading(
             [trans('category::common.manage'), "[{$types[$current]}]"],
             'fa-sitemap',
@@ -179,7 +193,7 @@ class Controller extends BackendController
         $category = new Category();
         $category->fill($request->all());
         $category->save();
-        $category->makeChildOf($parent ?: $this->manager->node());
+        $category->makeChildOf($parent ?: $this->getManager()->node());
 
         return view(
             '_modal_script',
@@ -273,7 +287,7 @@ class Controller extends BackendController
      */
     public function data()
     {
-        return response()->json(['html' => $this->manager->nestable()]);
+        return response()->json(['html' => $this->getManager()->nestable()]);
     }
 
     /**

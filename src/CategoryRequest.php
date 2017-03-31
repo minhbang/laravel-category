@@ -1,14 +1,14 @@
 <?php
 namespace Minhbang\Category;
 
-use Minhbang\Locale\TranslatableRequest;
+use Minhbang\Kit\Extensions\Request;
 
 /**
  * Class CategoryRequest
  *
  * @package Minhbang\Category
  */
-class CategoryRequest extends TranslatableRequest
+class CategoryRequest extends Request
 {
     public $trans_prefix = 'category::common';
     public $rules = [

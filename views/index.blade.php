@@ -1,4 +1,4 @@
-@extends('backend.layouts.main')
+@extends('backend.layouts.master')
 @section('content')
 <div class="panel panel-default panel-nestable panel-sidebar">
     <div class="panel-heading clearfix">
@@ -51,7 +51,7 @@
 </div>
 @stop
 
-@section('script')
+@push('scripts')
 <script type="text/javascript">
     $(document).ready(function () {
         $('.panel-nestable').mbNestable({
@@ -64,7 +64,7 @@
             trans: {
                 name: '{{ trans('category::common.item') }}'
             },
-            csrf_token: '{{ csrf_token() }}',
+            csrf_token: window.Laravel.csrfToken,
             afterDrop: function(){
                 location.reload(true);
             }
@@ -85,4 +85,4 @@
         });
     });
 </script>
-@stop
+@endpush
