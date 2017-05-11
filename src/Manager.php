@@ -23,6 +23,16 @@ class Manager extends Collection
     protected $types = [];
 
     /**
+     * @param string|mixed $model
+     *
+     * @return \Minhbang\Category\Root
+     */
+    public function of($model)
+    {
+        return $this->root(Kit::alias($model));
+    }
+
+    /**
      * Lấy root của category $type
      *
      * @param string $type
