@@ -86,7 +86,7 @@ class Controller extends BackendController {
 
         $this->switchType( $type );
         $max_depth = $this->getManager()->max_depth;
-        $nestable = $this->getManager()->nestable();
+        $nestable = $this->getManager()->nestable($this->route_prefix);
         $types = $this->getManager()->typeNames();
         $current = $this->type;
         $use_moderator = Category::$use_moderator;
@@ -271,7 +271,7 @@ class Controller extends BackendController {
      * @throws \Laracasts\Presenter\Exceptions\PresenterException
      */
     public function data() {
-        return response()->json( [ 'html' => $this->getManager()->nestable() ] );
+        return response()->json( [ 'html' => $this->getManager()->nestable($this->route_prefix) ] );
     }
 
     /**

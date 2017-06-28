@@ -47,11 +47,13 @@ class Root
     /**
      * Render html theo định dạng của jquery nestable plugin
      *
+     * @param null $route_prefix
+     *
      * @return string
      */
-    public function nestable()
+    public function nestable($route_prefix = null)
     {
-        return $this->toNestable($this->node, $this->max_depth);
+        return $this->toNestable($this->node, $this->max_depth, false, null, $route_prefix);
     }
 
     /**

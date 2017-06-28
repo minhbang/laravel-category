@@ -39,7 +39,7 @@ class ServiceProvider extends BaseServiceProvider
         // pattern filters
         $router->pattern('category', '[0-9]+');
         // model bindings
-        $router->model('category', 'Minhbang\Category\Category');
+        $router->model('category', Category::class);
         // Add category menus
         MenuManager::addItems(config('category.menus'));
     }
