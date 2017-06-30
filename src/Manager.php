@@ -4,14 +4,14 @@ namespace Minhbang\Category;
 
 use Illuminate\Support\Collection;
 use Kit;
+use Schema;
 
 /**
  * Class Manager
  *
  * @package Minhbang\Category
  */
-class Manager extends Collection
-{
+class Manager extends Collection {
     /**
      * @var \Minhbang\Category\Root[]
      */
@@ -27,9 +27,8 @@ class Manager extends Collection
      *
      * @return \Minhbang\Category\Root
      */
-    public function of($model)
-    {
-        return $this->root(Kit::alias($model));
+    public function of( $model ) {
+        return $this->root( Kit::alias( $model ) );
     }
 
     /**
@@ -39,11 +38,10 @@ class Manager extends Collection
      *
      * @return \Minhbang\Category\Root
      */
-    public function root($type)
-    {
-        abort_unless($this->has($type), 404, trans('category::common.invalid'));
+    public function root( $type ) {
+        abort_unless( $this->has( $type ), 404, trans( 'category::common.invalid' ) );
 
-        return $this->get($type)['root'];
+        return $this->get( $type )['root'];
     }
 
     /**
@@ -52,11 +50,10 @@ class Manager extends Collection
      *
      * @return array|string
      */
-    public function typeNames($type = null, $default = false)
-    {
-        return array_get($this->mapWithKeys(function ($item) {
-            return [$item['alias'] => $item['title']];
-        }), $type, $default);
+    public function typeNames( $type = null, $default = false ) {
+        return array_get( $this->mapWithKeys( function ( $item ) {
+            return [ $item['alias'] => $item['title'] ];
+        } ), $type, $default );
     }
 
     /**
@@ -67,14 +64,15 @@ class Manager extends Collection
      * @param string $sub
      * @param string $sub_title
      */
-    public function register($model, $sub = null, $sub_title = null)
-    {
-        $alias = Kit::alias($model) . ($sub ? "_$sub" : '');
-        $this->put($alias, [
-            'alias' => $alias,
-            'title' => Kit::title($model) . ($sub_title ? " - $sub_title" : ''),
-            'root'  => new Root($alias, config('category.max_depth')),
-        ]);
+    public function register( $model, $sub = null, $sub_title = null ) {
+        if ( Schema::hasTable( 'categories' ) ) {
+            $alias = Kit::alias( $model ) . ( $sub ? "_$sub" : '' );
+            $this->put( $alias, [
+                'alias' => $alias,
+                'title' => Kit::title( $model ) . ( $sub_title ? " - $sub_title" : '' ),
+                'root'  => new Root( $alias, config( 'category.max_depth' ) ),
+            ] );
+        }
     }
 
     /**
@@ -82,8 +80,7 @@ class Manager extends Collection
      *
      * @return array|mixed
      */
-    public function firstType($attribute = null)
-    {
-        return array_get($this->first(), $attribute);
+    public function firstType( $attribute = null ) {
+        return array_get( $this->first(), $attribute );
     }
 }
