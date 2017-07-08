@@ -185,7 +185,7 @@ class Controller extends BackendController {
         $category->makeChildOf( $parent ?: $this->getManager()->node() );
 
         return view(
-            '_modal_script',
+            'kit::_modal_script',
             [
                 'message'    => [
                     'type'    => 'success',
@@ -236,7 +236,7 @@ class Controller extends BackendController {
         $category->save();
 
         return view(
-            '_modal_script',
+            'kit::_modal_script',
             [
                 'message'    => [
                     'type'    => 'success',
