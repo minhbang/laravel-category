@@ -4,13 +4,29 @@ namespace Minhbang\Category;
 
 use Laracasts\Presenter\Presenter;
 use Html;
+use Minhbang\Kit\Traits\Presenter\NestablePresenter;
 
 /**
  * Class CategoryPresenter
  *
+ * @property-read \Minhbang\Category\Category $entity
  * @package Minhbang\Category
  */
 class CategoryPresenter extends Presenter {
+    use NestablePresenter;
+
+    /**
+     * Tạo tree data cho bootstrap treeview
+     *
+     * @param \Minhbang\Category\Category|mixed|null $selected
+     * @param int $max_depth
+     *
+     * @return string
+     */
+    public function tree( $selected = null, $max_depth = null ) {
+        return $this->toTree( $this->entity, $selected, $max_depth );
+    }
+
     /**
      * @return string
      */
@@ -77,7 +93,7 @@ class CategoryPresenter extends Presenter {
            data-title="' . trans( 'common.object_details_view', [ 'name' => trans( 'category::common.item' ) ] ) . '"
            data-icon="align-justify"><span class="glyphicon glyphicon-list"></span>
         </a>';
-        $edit = '<a href="' . route( "{$route_prefix}backend.category.edit", ['category' => $this->entity->id] ) . '"
+        $edit = '<a href="' . route( "{$route_prefix}backend.category.edit", [ 'category' => $this->entity->id ] ) . '"
            data-toggle="tooltip"
            class="modal-link btn btn-info btn-xs"
            data-title="' . trans( 'common.update_object', [ 'name' => trans( 'category::common.item' ) ] ) . '"

@@ -1,4 +1,5 @@
 <?php
+
 namespace Minhbang\Category;
 
 use Minhbang\Kit\Traits\Presenter\NestablePresenter;
@@ -10,8 +11,7 @@ use Minhbang\Kit\Support\VnString;
  *
  * @package Minhbang\Category
  */
-class Root
-{
+class Root {
     use NestablePresenter;
 
     /**
@@ -38,10 +38,9 @@ class Root
      * @param string $type
      * @param int $max_depth
      */
-    function __construct($type, $max_depth)
-    {
+    function __construct( $type, $max_depth ) {
         $this->max_depth = $max_depth;
-        $this->node      = Category::findRootBySlugOrCreate($type);
+        $this->node = Category::findRootBySlugOrCreate( $type );
     }
 
     /**
@@ -51,9 +50,8 @@ class Root
      *
      * @return string
      */
-    public function nestable($route_prefix = null)
-    {
-        return $this->toNestable($this->node, $this->max_depth, false, null, $route_prefix);
+    public function nestable( $route_prefix = null ) {
+        return $this->toNestable( $this->node, $this->max_depth, false, null, $route_prefix );
     }
 
     /**
@@ -61,29 +59,27 @@ class Root
      *
      * @return array
      */
-    public function selectize()
-    {
-        return $this->toSelectize($this->roots());
+    public function selectize() {
+        return $this->toSelectize( $this->roots() );
     }
 
     /**
      * Tạo tree data cho bootstrap treeview
      *
      * @param \Minhbang\Category\Category|mixed|null $selected
+     * @param int $max_depth
      *
      * @return string
      */
-    public function tree($selected = null)
-    {
-        return $this->toTree($this->node, $selected);
+    public function tree( $selected = null, $max_depth = null ) {
+        return $this->toTree( $this->node, $selected, $max_depth );
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Collection|\Minhbang\Category\Category[]
      */
-    public function roots()
-    {
-        if (is_null($this->roots)) {
+    public function roots() {
+        if ( is_null( $this->roots ) ) {
             $this->roots = $this->node->getImmediateDescendants();
         }
 
@@ -96,25 +92,22 @@ class Root
      *
      * @return array
      */
-    public function listRoots($attribute = 'title', $key = 'id')
-    {
-        return $this->roots()->pluck($attribute, $key)->all();
+    public function listRoots( $attribute = 'title', $key = 'id' ) {
+        return $this->roots()->pluck( $attribute, $key )->all();
     }
 
     /**
      * @return array
      */
-    public function typeNames()
-    {
-        return app('category-manager')->typeNames();
+    public function typeNames() {
+        return app( 'category-manager' )->typeNames();
     }
 
     /**
      * @return string
      */
-    public function typeName()
-    {
-        return app('category-manager')->typeNames($this->node->slug);
+    public function typeName() {
+        return app( 'category-manager' )->typeNames( $this->node->slug );
     }
 
     /**
@@ -122,8 +115,7 @@ class Root
      *
      * @return \Minhbang\Category\Category
      */
-    public function node()
-    {
+    public function node() {
         return $this->node;
     }
 
@@ -132,15 +124,14 @@ class Root
      *
      * @return int
      */
-    public function createNodesFromPath($path)
-    {
+    public function createNodesFromPath( $path ) {
         $root = $this->node;
-        foreach ($path as $title) {
-            if ($node = $root->descendants()->where('title', $title)->first()) {
+        foreach ( $path as $title ) {
+            if ( $node = $root->descendants()->where( 'title', $title )->first() ) {
                 $root = $node;
             } else {
-                $node = Category::create(['title' => $title, 'slug' => VnString::to_slug($title)]);
-                $node->makeChildOf($root);
+                $node = Category::create( [ 'title' => $title, 'slug' => VnString::to_slug( $title ) ] );
+                $node->makeChildOf( $root );
                 $root = $node;
             }
 
