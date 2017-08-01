@@ -7,7 +7,7 @@
 <div id="category-tree-{{$widget->id}}"></div>
 @push('scripts')
     <script type="text/javascript">
-        var category_route_{{$widget->id}} = '{{Route::has($widget->data['route_show']) ? route($widget->data['route_show'], ['category' => '__ID__']) : '#__ID__'}}',
+        var category_route_{{$widget->id}} = '{{Route::has($widget->data['route_show']) ? route($widget->data['route_show'], ['slug' => '__SLUG__']) : '#__SLUG__'}}',
             categories_data_{{$widget->id}} = {!! $category_tree !!};
 
         $(document).ready(function () {
@@ -21,7 +21,7 @@
                 if ($(e.target).is('.expand-icon')) {
                     return;
                 }
-                window.location.href = category_route_{{$widget->id}}.replace('__ID__', $(this).data('id'));
+                window.location.href = category_route_{{$widget->id}}.replace('__SLUG__', $(this).data('slug'));
             });
         });
     </script>
