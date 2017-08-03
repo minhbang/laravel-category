@@ -1,6 +1,6 @@
 <?php namespace Minhbang\Category\Widgets;
 
-use Minhbang\Layout\WidgetTypes\Support\HasRouteAttribute;
+use Minhbang\Kit\Support\HasRouteAttribute;
 use Minhbang\Layout\WidgetTypes\WidgetType;
 use CategoryManager;
 

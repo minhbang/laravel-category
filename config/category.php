@@ -1,25 +1,25 @@
 <?php
 return [
-    'presenter'     => Minhbang\Category\CategoryPresenter::class,
-    'max_depth'     => 5,
-    'middleware'    => [ 'web', 'role:admin' ],
+    'presenter' => Minhbang\Category\CategoryPresenter::class,
+    'max_depth' => 5,
+    'middleware' => ['web', 'role:admin'],
     'use_moderator' => true,
     // Định nghĩa menus cho category
-    'menus'         => [
+    'menus' => [
         'backend.sidebar.content.category' => [
             'priority' => 2,
-            'url'      => 'route:backend.category.index',
-            'label'    => 'trans:category::common.category',
-            'icon'     => 'fa-sitemap',
-            'active'   => 'backend/category*',
+            'url' => 'route:backend.category.index',
+            'label' => 'trans:category::common.category',
+            'icon' => 'fa-sitemap',
+            'active' => 'backend/category*',
         ],
     ],
-    'widgets'       => [
+    'widgets' => [
         'category' => [
-            'title'       => 'trans::category::widget.category.title',
+            'title' => 'trans::category::widget.category.title',
             'description' => 'trans::category::widget.category.description',
-            'icon'        => 'sitemap',
-            'class'       => \Minhbang\Category\Widgets\CategoryWidget::class,
+            'icon' => 'sitemap',
+            'class' => \Minhbang\Category\Widgets\CategoryWidget::class,
         ],
     ],
 ];
