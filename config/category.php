@@ -14,12 +14,12 @@ return [
             'active' => 'backend/category*',
         ],
     ],
-    'widgets' => [
+    /*'widgets' => [
         'category' => [
             'title' => 'trans::category::widget.category.title',
             'description' => 'trans::category::widget.category.description',
             'icon' => 'sitemap',
             'class' => \Minhbang\Category\Widgets\CategoryWidget::class,
         ],
-    ],
+    ],*/
 ];

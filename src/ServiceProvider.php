@@ -6,7 +6,6 @@ use Illuminate\Routing\Router;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use MenuManager;
-use Layout;
 
 /**
  * Class ServiceProvider
@@ -40,7 +39,6 @@ class ServiceProvider extends BaseServiceProvider
         // model bindings
         $router->model('category', Category::class);
         MenuManager::addItems(config('category.menus'));
-        Layout::registerWidgetTypes(config('category.widgets'));
     }
 
     /**

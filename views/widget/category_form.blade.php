@@ -7,13 +7,14 @@
     {!! Form::model($data,['class' => 'form-modal','url' => $url, 'method' => 'put']) !!}
     <div class="row">
         <div class="col-xs-8">
-            <div class="form-group {{ $errors->has("category_type") ? ' has-error':'' }}">
-                {!! Form::label("category_type", $labels['category_type'], ['class' => "control-label"]) !!}
-                {!! Form::select('category_type', $widget->typeInstance()->getCategoryTypes(), null, ['prompt' =>trans( 'category::common.select_category_type' ), 'class' => 'form-control selectize']) !!}
-                @if($errors->has('category_type'))
-                    <p class="help-block">{{ $errors->first('category_type') }}</p>
+            <div class="form-group {{ $errors->has("category_id") ? ' has-error':'' }}">
+                {!! Form::label("category_id", $labels['category_id'], ['class' => "control-label"]) !!}
+                {!! Form::select('category_id', $widget->typeInstance()->getCategories(), null, ['prompt' =>trans( 'category::common.select_category' ), 'class' => 'form-control selectize-tree']) !!}
+                @if($errors->has('category_id'))
+                    <p class="help-block">{{ $errors->first('category_id') }}</p>
                 @endif
             </div>
+
             <div class="form-group {{ $errors->has("route_show") ? ' has-error':'' }}">
                 {!! Form::label("route_show", $labels['route_show'], ['class' => "control-label"]) !!}
                 {!! Form::select(
