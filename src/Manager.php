@@ -51,11 +51,12 @@ class Manager extends Collection
     /**
      * @param string|mixed $model
      *
+     * @param string $sub
      * @return \Minhbang\Category\Root
      */
-    public function of($model)
+    public function of($model, $sub = null)
     {
-        return $this->root(Kit::alias($model));
+        return $this->root($this->getAlias($model, $sub));
     }
 
     /**
@@ -96,7 +97,7 @@ class Manager extends Collection
     public function register($model, $sub = null, $sub_title = null)
     {
         if (Schema::hasTable('categories')) {
-            $alias = Kit::alias($model).($sub ? "_$sub" : '');
+            $alias = $this->getAlias($model, $sub);
             $this->put($alias, [
                 'alias' => $alias,
                 'title' => Kit::title($model).($sub_title ? " - $sub_title" : ''),
@@ -113,5 +114,15 @@ class Manager extends Collection
     public function firstType($attribute = null)
     {
         return array_get($this->first(), $attribute);
+    }
+
+    /**
+     * @param string|mixed $model
+     * @param null $sub
+     * @return string
+     */
+    protected function getAlias($model, $sub = null)
+    {
+        return Kit::alias($model).($sub ? "_$sub" : '');
     }
 }

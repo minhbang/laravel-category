@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 //use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Minhbang\User\User;
+use Tests\TestCase;
 
 class CategoryManageTest extends TestCase
 {
