@@ -1,9 +1,11 @@
 <?php
+
 namespace Minhbang\Category;
 
 /**
  * Class Categorized
  *
+ * @property-read string $category_title
  * @package Minhbang\Category
  * @mixin \Eloquent
  */
@@ -43,6 +45,6 @@ trait Categorized
     public function scopeWithCategoryTitle($query)
     {
         return $query->leftJoin('categories', 'categories.id', '=', "{$this->table}.category_id")
-                     ->addSelect('categories.title as category_title');
+            ->addSelect('categories.title as category_title');
     }
 }
