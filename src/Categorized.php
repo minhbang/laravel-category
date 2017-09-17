@@ -22,19 +22,19 @@ trait Categorized
     /**
      * Tất cả content thuộc $category và con cháu của $category
      *
-     * @param \Illuminate\Database\Query\Builder $query
-     * @param \Minhbang\Category\Category $category
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Minhbang\Category\Category|array $category
      *
      * @return \Illuminate\Database\Query\Builder
      */
     public function scopeCategorized($query, $category = null)
     {
-        if (is_null($category)) {
-            return $query->with('category');
+        $query->with('category');
+        if ($category instanceof Category) {
+            $query->whereIn("{$this->table}.category_id", $category->descendantsAndSelf()->pluck('id')->all());
         }
-        $ids = $category->descendantsAndSelf()->pluck('id')->all();
 
-        return $query->with('category')->whereIn("{$this->table}.category_id", $ids);
+        return $query;
     }
 
     /**

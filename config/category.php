@@ -2,7 +2,7 @@
 return [
     'presenter' => Minhbang\Category\CategoryPresenter::class,
     'max_depth' => 5,
-    'middleware' => ['web', 'role:admin'],
+    'middleware' => ['web', 'role:sys.admin'],
     'use_moderator' => true,
     // Định nghĩa menus cho category
     'menus' => [
@@ -12,14 +12,7 @@ return [
             'label' => 'trans:category::common.category',
             'icon' => 'fa-sitemap',
             'active' => 'backend/category*',
+            'role' => 'sys.admin',
         ],
     ],
-    /*'widgets' => [
-        'category' => [
-            'title' => 'trans::category::widget.category.title',
-            'description' => 'trans::category::widget.category.description',
-            'icon' => 'sitemap',
-            'class' => \Minhbang\Category\Widgets\CategoryWidget::class,
-        ],
-    ],*/
 ];
