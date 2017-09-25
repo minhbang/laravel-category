@@ -26,7 +26,6 @@ class ServiceProvider extends BaseServiceProvider
         $this->loadTranslationsFrom(__DIR__.'/../lang', 'category');
         $this->loadViewsFrom(__DIR__.'/../views', 'category');
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-        $this->loadRoutesFrom(__DIR__.'/routes.php');
 
         $this->publishes([
             __DIR__.'/../views' => base_path('resources/views/vendor/category'),
@@ -38,6 +37,8 @@ class ServiceProvider extends BaseServiceProvider
         $router->pattern('category', '[0-9]+');
         // model bindings
         $router->model('category', Category::class);
+        $this->loadRoutesFrom(__DIR__.'/routes.php');
+
         MenuManager::addItems(config('category.menus'));
     }
 
