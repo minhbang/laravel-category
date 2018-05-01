@@ -1,0 +1,23 @@
+{
+    "Add sub Category":"Thêm Danh mục con",
+    "Are you sure you want to delete Category: {ITEM_NAME}<br><strong>Notice:<\/trong> All sub Category will be deleted along!":"Bạn có chắc chắn muốn xóa Danh mục: {ITEM_NAME}<br><strong>Lưu ý:<\/trong> Tất cả mục Danh mục con của nó sẽ bị xóa cùng!",
+    "Category":"Danh mục",
+    "Category not found.":"Không tìm thấy Danh mục yêu cầu.",
+    "Category page route":"Route trang xem Danh mục",
+    "Delete Category":"Xóa Danh mục",
+    "Display category list":"Hiển thị danh sách Danh mục",
+    "Drag and drop to change category position":"Kéo các Danh mục để di chuyển đến vị trí mới",
+    "Invalid Category type!":"Invalid Category type!",
+    "Manage Category":"Quản lý Danh mục",
+    "Max depth":"Chiều sâu",
+    "Moderator":"Cơ quan Quản lý",
+    "No Category Type registered!":"Chưa có Category Type nào được đăng ký!",
+    "Parent Category":"Danh mục cha",
+    "Route name":"Route name",
+    "Select category page route...":"Chọn route trang xem Danh mục...",
+    "Select category type...":"Chọn Loại Danh mục...",
+    "Select category...":"Chọn Danh mục...",
+    "Slug":"Tiêu đề SEO",
+    "Title":"Tiêu đề",
+    "— No moderator —":"— Chưa giao —"
+}

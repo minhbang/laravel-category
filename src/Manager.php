@@ -68,7 +68,7 @@ class Manager extends Collection
      */
     public function root($type)
     {
-        abort_unless($this->has($type), 404, trans('category::common.invalid'));
+        abort_unless($this->has($type), 404, __('Invalid Category type!'));
 
         return $this->get($type)['root'];
     }

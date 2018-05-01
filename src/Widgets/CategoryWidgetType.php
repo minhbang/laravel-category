@@ -96,19 +96,19 @@ abstract class CategoryWidgetType extends WidgetType
         return [
             [
                 'name' => 'category_id',
-                'title' => trans('category::widget.category.category_id'),
+                'title' => __('Category'),
                 'rule' => '',
                 'default' => null,
             ],
             [
                 'name' => 'route_show',
-                'title' => trans('category::widget.category.route_show'),
+                'title' => __('Category page route'),
                 'rule' => 'required|max:255',
                 'default' => '',
             ],
             [
                 'name' => 'max_depth',
-                'title' => trans('category::widget.category.max_depth'),
+                'title' => __('Max depth'),
                 'rule' => 'required|integer|min:1',
                 'default' => 1,
             ],

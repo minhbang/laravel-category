@@ -6,11 +6,11 @@
             <td><strong>{{$category->id}}</strong></td>
         </tr>
         <tr>
-            <td>{{ trans('category::common.title') }}</td>
+            <td>{{ __('Title') }}</td>
             <td><strong>{{$category->title}}</strong></td>
         </tr>
         <tr>
-            <td>{{ trans('category::common.slug') }}</td>
+            <td>{{ __('Slug') }}</td>
             <td><strong>{{$category->slug}}</strong></td>
         </tr>
     </table>

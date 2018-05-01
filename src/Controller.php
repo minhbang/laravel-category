@@ -52,7 +52,7 @@ class Controller extends BackendController {
             if ( $this->type_changeable ) {
                 $this->type = session( 'backend.category.type', CategoryManager::firstType( 'alias' ) );
             }
-            abort_unless( CategoryManager::has( $this->type ), 404, trans( 'category::common.invalid' ) );
+            abort_unless( CategoryManager::has( $this->type ), 404, __('Invalid Category type!' ) );
 
             $this->manager = CategoryManager::root( $this->type );
         }
@@ -77,8 +77,8 @@ class Controller extends BackendController {
      */
     public function index( $type = null ) {
         if ( CategoryManager::isEmpty() ) {
-            $this->buildHeading( trans( 'category::common.manage' ), 'fa-sitemap',
-                [ '#' => trans( 'category::common.category' ) ]
+            $this->buildHeading( __('Manage Category' ), 'fa-sitemap',
+                [ '#' => __('Category' ) ]
             );
 
             return view( $this->views['empty'] );
@@ -92,9 +92,9 @@ class Controller extends BackendController {
         $use_moderator = Category::$use_moderator;
         $user_groups = $use_moderator ? app( 'user-manager' )->listGroups() : [];
         $this->buildHeading(
-            [ trans( 'category::common.manage' ), "[{$types[$current]}]" ],
+            [ __('Manage Category' ), "[{$types[$current]}]" ],
             'fa-sitemap',
-            [ '#' => trans( 'category::common.category' ) ]
+            [ '#' => __('Category' ) ]
         );
 
 
@@ -189,7 +189,7 @@ class Controller extends BackendController {
             [
                 'message'    => [
                     'type'    => 'success',
-                    'content' => trans( 'common.create_object_success', [ 'name' => trans( 'category::common.item' ) ] ),
+                    'content' => __('Create new <strong>:name</strong> success', [ 'name' => __('Category' ) ] ),
                 ],
                 'reloadPage' => true,
             ]
@@ -240,7 +240,7 @@ class Controller extends BackendController {
             [
                 'message'    => [
                     'type'    => 'success',
-                    'content' => trans( 'common.update_object_success', [ 'name' => trans( 'category::common.item' ) ] ),
+                    'content' => __('Update <strong>:name</strong> success', [ 'name' => __('Category' ) ] ),
                 ],
                 'reloadPage' => true,
             ]
@@ -261,7 +261,7 @@ class Controller extends BackendController {
         return response()->json(
             [
                 'type'    => 'success',
-                'content' => trans( 'common.delete_object_success', [ 'name' => trans( 'category::common.category' ) ] ),
+                'content' => __('Delete <strong>:name</strong> success', [ 'name' => __('Category' ) ] ),
             ]
         );
     }
@@ -296,7 +296,7 @@ class Controller extends BackendController {
             return response()->json(
                 [
                     'type'    => 'success',
-                    'content' => trans( 'common.order_object_success', [ 'name' => trans( 'category::common.item' ) ] ),
+                    'content' => __('Update <strong>:name</strong> order success', [ 'name' => __('Category' ) ] ),
                 ]
             );
         } else {
@@ -331,7 +331,7 @@ class Controller extends BackendController {
         return die( json_encode(
             [
                 'type'    => 'error',
-                'content' => trans( 'category::common.not_found' ),
+                'content' => __('Category not found.' ),
             ]
         ) );
     }
@@ -345,7 +345,7 @@ class Controller extends BackendController {
         return [
             'moderator_id' => [
                 'rules' => 'required|integer',
-                'label' => trans( 'category::common.moderator_id' ),
+                'label' => __('Moderator' ),
             ],
         ];
     }

@@ -1,10 +1,8 @@
 <?php
 return [
-    'category' => [
-        'title' => 'Danh mục',
-        'description' => 'Hiển thị danh sách Danh mục',
-        'category_id' => 'Danh mục',
-        'route_show' => 'Route trang xem Danh mục',
-        'max_depth' => 'Chiều sâu',
-    ],
+    'category.title' => 'Danh mục',
+    'category.description' => 'Hiển thị danh sách Danh mục',
+    'category.category_id' => 'Danh mục',
+    'category.route_show' => 'Route trang xem Danh mục',
+    'category.max_depth' => 'Chiều sâu',
 ];

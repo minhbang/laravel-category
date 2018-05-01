@@ -1,0 +1,23 @@
+{
+    "Add sub Category":"Add sub Category",
+    "Are you sure you want to delete Category: {ITEM_NAME}<br><strong>Notice:<\/trong> All sub Category will be deleted along!":"Are you sure you want to delete Category: {ITEM_NAME}<br><strong>Notice:<\/trong> All sub Category will be deleted along!",
+    "Category":"Category",
+    "Category not found.":"Category not found.",
+    "Category page route":"Category page route",
+    "Delete Category":"Delete Category",
+    "Display category list":"Display category list",
+    "Drag and drop to change category position":"Drag and drop to change category position",
+    "Invalid Category type!":"Invalid Category type!",
+    "Manage Category":"Manage Category",
+    "Max depth":"Max depth",
+    "Moderator":"Moderator",
+    "No Category Type registered!":"No Category Type registered!",
+    "Parent Category":"Parent Category",
+    "Route name":"Route name",
+    "Select category page route...":"Select category page route...",
+    "Select category type...":"Select category type...",
+    "Select category...":"Select category...",
+    "Slug":"Slug",
+    "Title":"Title",
+    "— No moderator —":"— No moderator —"
+}

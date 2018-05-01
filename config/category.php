@@ -9,7 +9,7 @@ return [
         'backend.sidebar.content.category' => [
             'priority' => 2,
             'url' => 'route:backend.category.index',
-            'label' => 'trans:category::common.category',
+            'label' => '__:Category',
             'icon' => 'fa-sitemap',
             'active' => 'backend/category*',
             'role' => 'sys.admin',

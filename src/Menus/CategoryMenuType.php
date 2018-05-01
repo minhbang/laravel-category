@@ -72,13 +72,13 @@ abstract class CategoryMenuType extends MenuType
         return [
             [
                 'name' => 'category_id',
-                'title' => trans('category::menu.category.category_id'),
+                'title' => __('Category'),
                 'rule' => 'required|integer',
                 'default' => null,
             ],
             [
                 'name' => 'route_show',
-                'title' => trans('category::menu.category.route_show'),
+                'title' => __('Route show'),
                 'rule' => 'required|max:255',
                 'default' => '',
             ],

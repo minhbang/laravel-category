@@ -5,10 +5,10 @@
             <div class="loading hidden"></div>
             <a href="{{route($route_prefix. 'backend.category.create')}}"
                class="modal-link btn btn-success btn-xs"
-               data-title="{{trans('common.create_object', ['name' => trans('category::common.item')])}}"
-               data-label="{{trans('common.save')}}"
+               data-title="{{__('Create new :name', ['name' => __('Category')])}}"
+               data-label="{{__('Save')}}"
                data-icon="align-justify">
-                <span class="glyphicon glyphicon-plus-sign"></span> {{trans('category::common.create_item')}}
+                <span class="glyphicon glyphicon-plus-sign"></span> {{__('Add sub Category')}}
             </a>
             <a href="#" data-action="collapseAll" class="nestable_action btn btn-default btn-xs">
                 <span class="glyphicon glyphicon-circle-arrow-up"></span>
@@ -25,8 +25,8 @@
                             <div class="dd-category">
                                 <div class="nested-list-head">
                                     <div class="nested-list-actions nested-list-titles pull-right">
-                                        {{ $use_moderator ? trans('category::common.moderator_id'):'' }}
-                                        <div class="actions">{{trans('common.actions')}}</div>
+                                        {{ $use_moderator ? __('Moderator'):'' }}
+                                        <div class="actions">{{__('Actions')}}</div>
                                     </div>
                                 </div>
                             </div>
@@ -47,7 +47,7 @@
 
         </div>
         <div class="panel-footer">
-            <span class="glyphicon glyphicon-info-sign"></span> {{ trans('category::common.order_hint')}}
+            <span class="glyphicon glyphicon-info-sign"></span> {{ __('Drag and drop to change category position')}}
         </div>
     </div>
 @stop
@@ -63,7 +63,7 @@
             },
             max_depth:{{ $max_depth }},
             trans: {
-                name: '{{ trans('category::common.item') }}'
+                name: '{{ __('Category') }}'
             },
             csrf_token: window.Laravel.csrfToken,
             afterDrop: function () {

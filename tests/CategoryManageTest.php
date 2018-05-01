@@ -41,6 +41,6 @@ class CategoryManageTest extends TestCase
 
         // Truy cập bằng quyền Super Admin
         $this->actingAs($this->users['super_admin'])->visit('/backend/category')
-            ->see(trans('category::common.manage'));
+            ->see(__('Manage Category'));
     }
 }
